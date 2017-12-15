@@ -63,6 +63,7 @@ namespace MaxFlowVisualization_Winforms {
         }
 
         private void updateMessage() { labelMainMessage.Text = message.getAppropriateMessage(appState); }
+        public void SetMessage(string message) { labelMainMessage.Text = message; }
         private void enableSolveButton(bool shouldEnable) { buttonSolve.Enabled = shouldEnable; }
 
         private void enableEndDrawingButton(bool shouldEnable) {
@@ -95,7 +96,7 @@ namespace MaxFlowVisualization_Winforms {
                     enableSolveButton(true);
                     break;
                 case AppState.Drawing:
-                    drawing.AddAppropriateNetworkComponent();
+                    maxFlow.AddAppropriateNetworkComponent();
                     enableSolveButton(false);
                     break;
                 case AppState.ClearDrawingArea:
@@ -162,15 +163,20 @@ namespace MaxFlowVisualization_Winforms {
             if (drag.IsActive) {
                 drag.EndLocation = this.PointToClient(drawing.RelativeLocationInDrAreaOf(Cursor.Position));
                 if (drag.EndedInNode(nodeLabels: maxFlow.LabelNodes.array))
-                    drawing.ShouldDraw = ShouldDraw.Connection;
+                    maxFlow.ShouldAdd = ShouldAdd.Connection;
                     processUserInput();
             }
             drag.IsActive = false;
         }
 
+        public void capacity_TextChanged(object sender, EventArgs e) {
+            TextBox textBox = (TextBox)sender;
+            maxFlow.ChangeCapacity(textBox);
+        }
+
         private void DrawingAreaComponent_MouseDown(object sender, MouseEventArgs e) {
             Drawing.PositionInArea = e.Location;
-            drawing.ShouldDraw = ShouldDraw.Node;
+            maxFlow.ShouldAdd = ShouldAdd.Node;
             processUserInput();
         }
     }

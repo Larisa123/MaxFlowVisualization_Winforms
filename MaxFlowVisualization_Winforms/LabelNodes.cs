@@ -14,7 +14,6 @@ namespace MaxFlowVisualization_Winforms
     /// </summary>
     class LabelNodes {
         private MainWindow mainWindow;
-        private Drawing drawing;
 
         public int NumberOnScreen { get; set; }
         public int MaxNumber { get; set; }
@@ -22,7 +21,6 @@ namespace MaxFlowVisualization_Winforms
 
         public LabelNodes(MainWindow mainWindow) {
             this.mainWindow = mainWindow;
-            this.drawing = mainWindow.Drawing;
             NumberOnScreen = 0;
         }
 
@@ -49,10 +47,10 @@ namespace MaxFlowVisualization_Winforms
 
             // Add label:
             Label newLabel = new Label  {
-                Location = drawing.GetRelativeLocationOfLastClick(),
+                Location = mainWindow.Drawing.GetRelativeLocationOfLastClick(),
                 Name = "label_" + NumberOnScreen.ToString(),
-                Size = new Size(drawing.CircleRadius, drawing.CircleRadius), // as big as the circle, we will be draging it later
-                ForeColor = drawing.PenColor,
+                Size = new Size(mainWindow.Drawing.CircleRadius, mainWindow.Drawing.CircleRadius), // as big as the circle, we will be draging it later
+                ForeColor = mainWindow.Drawing.PenColor,
                 Text = NumberOnScreen.ToString().ToString()
             };
             mainWindow.Controls.Add(newLabel);
@@ -66,7 +64,7 @@ namespace MaxFlowVisualization_Winforms
             AddLabelNodeInArray(newLabel);
 
             // Draw circle around the label:
-            drawing.DrawCircleAroundLastClick();
+            mainWindow.Drawing.DrawCircleAroundLastClick();
         }
 
         public void removeLabelNodes() {

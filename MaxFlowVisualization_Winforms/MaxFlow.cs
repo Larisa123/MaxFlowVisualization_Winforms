@@ -4,29 +4,58 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using System.Drawing;
+
+
 
 namespace MaxFlowVisualization_Winforms
 {
+    enum ShouldAdd { Nothing, Node, Connection, Capacity }
+
+
     class MaxFlow {
+        private MainWindow mainWindow;
+
         private int s; // in node
         private int t;// out node
         private int n; // matrix dimension
         private int[,] graph; // storing capacities on connections between nodes
 
+        private ShouldAdd shouldAdd;
         // Nodes:
         private LabelNodes labelNodes;
         // Connections: 
 
-
         // getter, setter:
         internal LabelNodes LabelNodes { get => labelNodes; set => labelNodes = value; }
+        internal ShouldAdd ShouldAdd { get => shouldAdd; set => shouldAdd = value; }
 
         /// <summary>
         /// Initializes some properties - label nodes etc.
         /// </summary>
         public MaxFlow(MainWindow mainWindow) {
+            mainWindow = this.mainWindow;
             LabelNodes = new LabelNodes(mainWindow: mainWindow);
+            this.ShouldAdd = ShouldAdd.Nothing;
+
             ResetGraph();
+        }
+
+        public void AddAppropriateNetworkComponent() {
+            switch (this.ShouldAdd) {
+                case ShouldAdd.Node:
+                    LabelNodes.addNewNodeLabel();
+                    break;
+                case ShouldAdd.Connection:
+                    addConnection(); // TODO: add this method to Connection class when you create it
+                    break;
+                case ShouldAdd.Capacity:
+                    addCapacity(); // TODO: add this method to Connection class when you create it
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
@@ -46,9 +75,52 @@ namespace MaxFlowVisualization_Winforms
             try { return fordFulkerson(); } catch { return -1; } // if something goes wrong TODO: check which errors 
         }
 
-        public void AddConnectionAndSetCapacity(int nodeA, int nodeB, int capacity) {
-            if (capacity < 0) return; // only positive values should be able to get set //TODO: let user know he should select a positive value!
-            graph[nodeA, nodeB] = capacity;
+        private void addCapacity() {
+            // TODO: add this method to Connection class when you create it
+            // add location to screen:
+            int capacityPositionYMargin = 0; //TODO: add as property to Connection class
+            int middleX = (mainWindow.Drag.StartLocation.X + mainWindow.Drag.EndLocation.X) / 2;
+            int middleY = (mainWindow.Drag.StartLocation.Y + mainWindow.Drag.EndLocation.Y) / 2;
+            Point location = mainWindow.Drawing.RelativeLocation(new Point(middleX, middleY + capacityPositionYMargin));
+
+            // TODO: add appropriate name: connection_nodeIndex1_nodeIndex2, add to graph matrix
+            TextBox capacityText = new TextBox();
+            capacityText.Location = location;
+            capacityText.Text = "0";
+            capacityText.MaximumSize = new Size(20, 20);
+            mainWindow.Controls.Add(capacityText);
+            capacityText.BringToFront();
+
+            // subscribe label to mouse events (for connections):
+            capacityText.TextChanged += new EventHandler(mainWindow.capacity_TextChanged);
+        }
+        private void addConnection() {
+            // TODO: add this method to Connection class when you create it
+            //Console.WriteLine(mainWindow.);
+
+            Point startPoint = mainWindow.Drag.StartLocation;
+            Point endPoint = mainWindow.Drag.EndLocation;
+            mainWindow.Drawing.DrawLine(startPoint, endPoint);
+            ShouldAdd = ShouldAdd.Capacity;
+            AddAppropriateNetworkComponent();
+        }
+
+        public void ChangeCapacity(TextBox textBox) {
+            try {
+                int capacity = int.Parse(textBox.Text);
+                if (capacity < 0) {
+                    mainWindow.SetMessage("Capacity should be numeric!");
+                }
+                else { SetCapacity(capacity, fromTextBox: textBox); }
+            }
+            catch {
+                mainWindow.SetMessage("Capacity should be positive!");
+            }
+        }
+
+        public void SetCapacity(int nodeA, TextBox fromTextBox) {
+            // TODO: use spliting to get out start and end indexes of nodes
+            //graph[nodeA, nodeB] = capacity;
         }
 
         public void InitializeGraph(int dimension) {
