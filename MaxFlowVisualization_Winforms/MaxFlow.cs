@@ -11,7 +11,31 @@ namespace MaxFlowVisualization_Winforms
         private int s; // in node
         private int t;// out node
         private int n; // matrix dimension
-        private int[,] graph;
+        private int[,] graph; // storing capacities on connections between nodes
+
+        // Nodes:
+        private LabelNodes labelNodes;
+        // Connections: 
+
+
+        // getter, setter:
+        internal LabelNodes LabelNodes { get => labelNodes; set => labelNodes = value; }
+
+        /// <summary>
+        /// Initializes some properties - label nodes etc.
+        /// </summary>
+        public MaxFlow(MainWindow mainWindow) {
+            LabelNodes = new LabelNodes(mainWindow: mainWindow);
+            ResetGraph();
+        }
+
+        /// <summary>
+        /// Resets all properties associated with computing max flow - graph's dimension, number of current vertices etc.
+        /// </summary>
+        public void ResetGraph() {
+            labelNodes.ResetAllProperties();
+            this.ResetAllProperties();
+        }
 
         /// <summary>
         /// Solves the max flow problem and returns the f value.
@@ -38,8 +62,8 @@ namespace MaxFlowVisualization_Winforms
             this.n = 0;
         }
 
-        public void SetS(int index) { }
-        public void SetT(int index) { }
+        public void SetS(int index) { this.s = s; }
+        public void SetT(int index) { this.t = t; }
 
         //                                       ALGORITM CODE:
 

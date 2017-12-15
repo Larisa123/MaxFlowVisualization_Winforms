@@ -11,6 +11,7 @@ namespace MaxFlowVisualization_Winforms
 {
     class Drawing {
         private MainWindow mainWindow;
+        private ShouldDraw shouldDraw;
 
         private Graphics area;
         public Point AreaLoc; // drawing area location
@@ -18,14 +19,17 @@ namespace MaxFlowVisualization_Winforms
         public Point PositionInArea; // position in drawing area - where the user clicked to add a node
 
         private Pen circlePen;
-        private Pen connectionPen;// we need a different pen for drawing lines, because of line caps on arrays
+        private Pen connectionPen;// we need a different pen for drawing lines, because of line caps on connections
         private float penWidth;
         public Color PenColor;
         private Color backColor;
         public int CircleRadius;
 
+        internal ShouldDraw ShouldDraw { get => shouldDraw; set => shouldDraw = value; }
+
         public Drawing(MainWindow mainWindow, PictureBox drAreaComp)  {
             this.mainWindow = mainWindow;
+            this.ShouldDraw = ShouldDraw.Nothing;
 
             area = drAreaComp.CreateGraphics();
             AreaLoc = drAreaComp.Location;
@@ -34,6 +38,37 @@ namespace MaxFlowVisualization_Winforms
             penWidth = 2F;
             PenColor = Color.DarkBlue;
             circlePen = new Pen(PenColor, penWidth);
+            connectionPen = new Pen(PenColor, penWidth);
+            connectionPen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
+        }
+
+        public void AddAppropriateNetworkComponent() {
+            switch (ShouldDraw) {
+                case ShouldDraw.Node:
+                    mainWindow.MaxFlow.LabelNodes.addNewNodeLabel();
+                    break;
+                case ShouldDraw.Connection:
+                    addConnection(); // TODO: add this method to Connection class when you create it
+                    break;
+                case ShouldDraw.Capacity:
+                    addCapacity(); // TODO: add this method to Connection class when you create it
+                    break;
+                default:
+                    break;
+            }
+            //LabelNodes.addNewNodeLabel();
+        }
+
+        private void addCapacity() {
+            // TODO: add this method to Connection class when you create it
+        }
+        private void addConnection() {
+            // TODO: add this method to Connection class when you create it
+            //Console.WriteLine(mainWindow.);
+
+            Point startPoint = mainWindow.Drag.StartLocation;
+            Point endPoint = mainWindow.Drag.EndLocation;
+            this.area.DrawLine(connectionPen, startPoint, endPoint);
         }
 
         public void DrawCircleAroundLastClick() {
@@ -42,15 +77,22 @@ namespace MaxFlowVisualization_Winforms
             this.area.DrawEllipse(circlePen, rect: new Rectangle(circlePos, circleSize));
         }
 
+        public Point RelativeLocationInDrAreaOf(Point location) {
+            return new Point(location.X - AreaLoc.X, location.Y - AreaLoc.Y);
+        }
         public Point GetRelativeLocationOfLastClick() {
             int x = PositionInArea.X + AreaLoc.X - CircleRadius / 3;
             int y = PositionInArea.Y + AreaLoc.Y - CircleRadius / 3;
             return new Point(x, y);
         }
-
         public void ClearDrawingArea() {
-            mainWindow.LabelNodes.removeLabelNodes();
+            mainWindow.MaxFlow.LabelNodes.removeLabelNodes();
             this.area.Clear(backColor);
         }
+
+        //public Point PointSum(Point A, Point B) { return new Point(A.X + B.X, A.Y + B.Y); }
     }
+
+
+    enum ShouldDraw { Nothing, Node, Connection, Capacity }
 }

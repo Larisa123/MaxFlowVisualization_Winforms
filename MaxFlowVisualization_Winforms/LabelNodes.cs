@@ -31,6 +31,12 @@ namespace MaxFlowVisualization_Winforms
             this.array = new Label[this.MaxNumber];
         }
 
+        public void ResetAllProperties() {
+            this.NumberOnScreen = 0;
+            this.MaxNumber = 0;
+            this.removeLabelNodes();
+        }
+
         public void AddLabelNodeInArray(Label label) {
             this.array[this.NumberOnScreen] = label;
             this.NumberOnScreen++;
@@ -42,21 +48,19 @@ namespace MaxFlowVisualization_Winforms
             // gets executed only when the number of nodes of screen is smaller than the max number of nodes
 
             // Add label:
-            Label newLabel = new Label();
-
-            newLabel.Location = drawing.GetRelativeLocationOfLastClick();
-            newLabel.Name = "label_" + NumberOnScreen.ToString();
-            newLabel.Size = new Size(drawing.CircleRadius, drawing.CircleRadius); // size should be as big as the circle, since we will be draging it later
-            newLabel.ForeColor = drawing.PenColor;
-            newLabel.Text = NumberOnScreen.ToString();
-
+            Label newLabel = new Label  {
+                Location = drawing.GetRelativeLocationOfLastClick(),
+                Name = "label_" + NumberOnScreen.ToString(),
+                Size = new Size(drawing.CircleRadius, drawing.CircleRadius), // as big as the circle, we will be draging it later
+                ForeColor = drawing.PenColor,
+                Text = NumberOnScreen.ToString().ToString()
+            };
             mainWindow.Controls.Add(newLabel);
             newLabel.BringToFront();
 
             // subscribe label to mouse events (for connections):
             newLabel.MouseDown += new MouseEventHandler(mainWindow.labelNode_MouseDown);
             newLabel.MouseUp += new MouseEventHandler(mainWindow.labelNode_MouseUp);
-
 
             // Add label to array:
             AddLabelNodeInArray(newLabel);

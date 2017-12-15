@@ -15,15 +15,15 @@ namespace MaxFlowVisualization_Winforms {
 
         // Algorithm:
         private MaxFlow maxFlow;
-        // Nodes:
-        private LabelNodes labelNodes;
-        // Connections:
+        // Connection detection - draging detection:
         private Drag drag;
 
         private Drawing drawing;
 
-        internal LabelNodes LabelNodes { get => labelNodes; set => labelNodes = value; }
+        // properties getters, setters:
         internal Drawing Drawing { get => drawing; set => drawing = value; }
+        internal Drag Drag { get => drag; set => drag = value; }
+        internal MaxFlow MaxFlow { get => maxFlow; set => maxFlow = value; }
 
         public MainWindow() {
             InitializeComponent();
@@ -40,47 +40,30 @@ namespace MaxFlowVisualization_Winforms {
             // drawing:
             Drawing = new Drawing(mainWindow: this, drAreaComp: DrawingAreaComponent);
 
-            // Nodes:
-            LabelNodes = new LabelNodes(mainWindow: this);
-
-            // algorithm:
-            maxFlow = new MaxFlow();
-            resetGraph();
+            // algorithm (also label nodes and connections, capacities):
+            MaxFlow = new MaxFlow(mainWindow: this);
 
             // Connections:
-            drag = new Drag();
-            drag.IsActive = false;
+            Drag = new Drag();
+            Drag.IsActive = false;
         }
-
-        ///                      NODE CONNECTIONS:
-                             
-        private void drawNodeConnection(Point endLocation) {
-            //TODO
-        }
+                            
 
         /// <summary>
-        /// Resets all properties associated with computing max flow - graph's dimension, number of current vertices etc.
+        /// Shows a fixed example of a network.
         /// </summary>
-        private void resetGraph() {
-            LabelNodes.NumberOnScreen = 0;
-            maxFlow.ResetAllProperties();
-        }
-
         private void showExample() {
 
         }
-
+        /// <summary>
+        /// Solves the current example (either fixed or drawn), gets called after button click.
+        /// </summary>
         private void solveCurrentExample() {
 
         }
 
-        private void updateMessage() {
-            labelMainMessage.Text = message.getAppropriateMessage(appState);
-        }
-
-        private void enableSolveButton(bool shouldEnable) {
-            buttonSolve.Enabled = shouldEnable;
-        }
+        private void updateMessage() { labelMainMessage.Text = message.getAppropriateMessage(appState); }
+        private void enableSolveButton(bool shouldEnable) { buttonSolve.Enabled = shouldEnable; }
 
         private void enableEndDrawingButton(bool shouldEnable) {
             //TODO: Should only get enabled when the drawn graph is actually a network!
@@ -112,7 +95,7 @@ namespace MaxFlowVisualization_Winforms {
                     enableSolveButton(true);
                     break;
                 case AppState.Drawing:
-                    LabelNodes.addNewNodeLabel();
+                    drawing.AddAppropriateNetworkComponent();
                     enableSolveButton(false);
                     break;
                 case AppState.ClearDrawingArea:
@@ -137,8 +120,8 @@ namespace MaxFlowVisualization_Winforms {
         }
 
         private void entryFormEntryConfirmed(int entryValue) {
-            maxFlow.InitializeGraph(entryValue);
-            LabelNodes.InitializeLabelArray(entryValue);
+            MaxFlow.InitializeGraph(entryValue);
+            MaxFlow.LabelNodes.InitializeLabelArray(entryValue);
             appState = AppState.Drawing;
         }  
 
@@ -148,44 +131,46 @@ namespace MaxFlowVisualization_Winforms {
             updateMessage();
             processUserInput();
         }
-
         private void buttonDraw_Click(object sender, EventArgs e){
             appState = AppState.Draw;
             buttonClicked();
         }
-
         private void buttonShowExample_Click(object sender, EventArgs e) {
             appState = AppState.ShowExample;
             buttonClicked();
         }
-
         private void buttonClearDrawingArea_Click(object sender, EventArgs e) {
             appState = AppState.ClearDrawingArea;
             buttonClicked();
         }
-
         private void buttonEndDrawing_Click(object sender, EventArgs e) {
             appState = AppState.EndDrawing;
             buttonClicked();
         }
-
         private void buttonSolve_Click(object sender, EventArgs e) {
             appState = AppState.Solve;
             buttonClicked();
         }
 
         public void labelNode_MouseDown(object sender, MouseEventArgs e) {
-            drag.StartLocation = e.Location;
+            drag.StartNodeLabel = (Label)sender; // since label is calling this, this shouldnt be able to throw an error
+            drag.StartLocation = this.PointToClient(drawing.RelativeLocationInDrAreaOf(Cursor.Position));
             drag.IsActive = true;
         }
             
         public void labelNode_MouseUp(object sender, MouseEventArgs e) {
+            if (drag.IsActive) {
+                drag.EndLocation = this.PointToClient(drawing.RelativeLocationInDrAreaOf(Cursor.Position));
+                if (drag.EndedInNode(nodeLabels: maxFlow.LabelNodes.array))
+                    drawing.ShouldDraw = ShouldDraw.Connection;
+                    processUserInput();
+            }
             drag.IsActive = false;
-            drag.EndLocation = e.Location;
         }
 
         private void DrawingAreaComponent_MouseDown(object sender, MouseEventArgs e) {
             Drawing.PositionInArea = e.Location;
+            drawing.ShouldDraw = ShouldDraw.Node;
             processUserInput();
         }
     }
