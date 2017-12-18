@@ -53,6 +53,7 @@
     <Compile Include="EnterNumberOfNodesForm.Designer.cs">
       <DependentUpon>EnterNumberOfNodesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LabelNodes.cs" />
     <Compile Include="MaxFlow.cs" />
     <Compile Include="MainWindow.cs">

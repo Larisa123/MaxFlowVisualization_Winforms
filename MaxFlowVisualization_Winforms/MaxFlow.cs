@@ -25,7 +25,6 @@ namespace MaxFlowVisualization_Winforms
         private ShouldAdd shouldAdd;
         // Nodes:
         private LabelNodes labelNodes;
-        // Connections: 
 
         // getter, setter:
         internal LabelNodes LabelNodes { get => labelNodes; set => labelNodes = value; }
@@ -35,12 +34,13 @@ namespace MaxFlowVisualization_Winforms
         /// Initializes some properties - label nodes etc.
         /// </summary>
         public MaxFlow(MainWindow mainWindow) {
-            mainWindow = this.mainWindow;
-            LabelNodes = new LabelNodes(mainWindow: mainWindow);
+            this.mainWindow = mainWindow;
+            LabelNodes = new LabelNodes(mainWindow: this.mainWindow);
             this.ShouldAdd = ShouldAdd.Nothing;
 
             ResetGraph();
         }
+
 
         public void AddAppropriateNetworkComponent() {
             switch (this.ShouldAdd) {
@@ -134,8 +134,12 @@ namespace MaxFlowVisualization_Winforms
             this.n = 0;
         }
 
+#pragma warning disable CS1717 // Assignment made to same variable; did you mean to assign something else?
         public void SetS(int index) { this.s = s; }
+#pragma warning restore CS1717 // Assignment made to same variable; did you mean to assign something else?
+#pragma warning disable CS1717 // Assignment made to same variable; did you mean to assign something else?
         public void SetT(int index) { this.t = t; }
+#pragma warning restore CS1717 // Assignment made to same variable; did you mean to assign something else?
 
         //                                       ALGORITM CODE:
 

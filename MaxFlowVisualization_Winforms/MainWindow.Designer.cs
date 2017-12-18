@@ -39,8 +39,6 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.DrawingAreaComponent = new System.Windows.Forms.PictureBox();
             this.buttonClearDrawingArea = new System.Windows.Forms.Button();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DrawingAreaComponent)).BeginInit();
             this.SuspendLayout();
             // 
@@ -144,27 +142,11 @@
             this.buttonClearDrawingArea.Visible = false;
             this.buttonClearDrawingArea.Click += new System.EventHandler(this.buttonClearDrawingArea_Click);
             // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(537, 24);
-            this.menuStrip1.TabIndex = 11;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 23);
-            this.label1.TabIndex = 0;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(537, 473);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonClearDrawingArea);
             this.Controls.Add(this.DrawingAreaComponent);
             this.Controls.Add(this.labelMainMessage);
@@ -175,8 +157,7 @@
             this.Controls.Add(this.buttonSolve);
             this.Controls.Add(this.buttonEndDrawing);
             this.Controls.Add(this.buttonDraw);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "MainWindow";
             this.Text = "Maksimalni pretok skozi omrežje";
             ((System.ComponentModel.ISupportInitialize)(this.DrawingAreaComponent)).EndInit();
@@ -198,8 +179,6 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.PictureBox DrawingAreaComponent;
         private System.Windows.Forms.Button buttonClearDrawingArea;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.Label label1;
     }
 }
 

@@ -13,10 +13,9 @@ namespace MaxFlowVisualization_Winforms {
         private AppState appState;
         private MessageText message;
 
-        // Algorithm:
-        private MaxFlow maxFlow;
-        // Connection detection - draging detection:
-        private Drag drag;
+        private MaxFlow maxFlow; // Algorithm
+
+        private Drag drag; // draging detection
 
         private Drawing drawing;
 
@@ -27,6 +26,7 @@ namespace MaxFlowVisualization_Winforms {
 
         public MainWindow() {
             InitializeComponent();
+
             initializeOnStart();
         }
 
@@ -37,11 +37,11 @@ namespace MaxFlowVisualization_Winforms {
             appState = AppState.Initialized;
             message = new MessageText();
 
+            // algorithm (also label nodes and connections, capacities):
+            maxFlow = new MaxFlow(mainWindow: this);
+
             // drawing:
             Drawing = new Drawing(mainWindow: this, drAreaComp: DrawingAreaComponent);
-
-            // algorithm (also label nodes and connections, capacities):
-            MaxFlow = new MaxFlow(mainWindow: this);
 
             // Connections:
             Drag = new Drag();
@@ -121,8 +121,8 @@ namespace MaxFlowVisualization_Winforms {
         }
 
         private void entryFormEntryConfirmed(int entryValue) {
-            MaxFlow.InitializeGraph(entryValue);
-            MaxFlow.LabelNodes.InitializeLabelArray(entryValue);
+            maxFlow.InitializeGraph(entryValue);
+            maxFlow.LabelNodes.InitializeLabelArray(entryValue);
             appState = AppState.Drawing;
         }  
 
@@ -179,6 +179,7 @@ namespace MaxFlowVisualization_Winforms {
             maxFlow.ShouldAdd = ShouldAdd.Node;
             processUserInput();
         }
+
     }
 
 
