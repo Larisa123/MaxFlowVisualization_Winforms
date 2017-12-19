@@ -45,7 +45,7 @@ namespace MaxFlowVisualization_Winforms
         public void AddAppropriateNetworkComponent() {
             switch (this.ShouldAdd) {
                 case ShouldAdd.Node:
-                    LabelNodes.addNewNodeLabel();
+                    LabelNodes.AddNewNodeLabel();
                     break;
                 case ShouldAdd.Connection:
                     addConnection(); // TODO: add this method to Connection class when you create it
@@ -84,10 +84,14 @@ namespace MaxFlowVisualization_Winforms
             Point location = mainWindow.Drawing.RelativeLocation(new Point(middleX, middleY + capacityPositionYMargin));
 
             // TODO: add appropriate name: connection_nodeIndex1_nodeIndex2, add to graph matrix
-            TextBox capacityText = new TextBox();
-            capacityText.Location = location;
-            capacityText.Text = "0";
-            capacityText.MaximumSize = new Size(20, 20);
+            TextBox capacityText = new TextBox {
+                Location = location,
+                Text = "0",
+                MaximumSize = new Size(20, 20),
+                BackColor = mainWindow.BackColor,
+                BorderStyle = BorderStyle.None
+            };
+
             mainWindow.Controls.Add(capacityText);
             capacityText.BringToFront();
 
@@ -105,16 +109,55 @@ namespace MaxFlowVisualization_Winforms
             AddAppropriateNetworkComponent();
         }
 
+        public bool CheckIfDrawnGraphANetwork() {
+            //TODO: implement this method to actually check this
+            return true;
+        }
+
+        public void SetInOutNodes() {
+            MessageBox.Show(MessageText.SetSAndT);
+            MainWindow.AppState = AppState.SetS;
+        }
+        public void SetNode(string node, Label label) {
+            Font bold = new Font(label.Font, FontStyle.Bold);
+            label.Font = bold;
+
+            Label signLabel = new Label {
+                Name = node,
+                Size = new Size(Drawing.CircleRadius, Drawing.CircleRadius),
+                ForeColor = Drawing.PenColor,
+                Text = node.ToUpper()
+                
+            };
+            signLabel.Font = bold;
+
+            if (node == "s") {
+                this.s = int.Parse(label.Tag.ToString());
+                signLabel.Location = Drawing.PointSum(label.Location, new Point(-Drawing.CircleRadius * 2, 0));
+
+                MainWindow.AppState = AppState.SetT;
+            }
+            if (node == "t") {
+                this.t = int.Parse(label.Tag.ToString());
+                signLabel.Location = Drawing.PointSum(label.Location, new Point(Drawing.CircleRadius * 2, 0));
+
+                MainWindow.AppState = AppState.PreparedForSolving;
+            }
+
+            mainWindow.Controls.Add(signLabel);
+            signLabel.BringToFront();
+        }
+
         public void ChangeCapacity(TextBox textBox) {
             try {
                 int capacity = int.Parse(textBox.Text);
                 if (capacity < 0) {
-                    mainWindow.SetMessage("Capacity should be numeric!");
+                    mainWindow.SetMessage("Kapaciteta more biti numerična!"); //TODO: add to messagetext
                 }
                 else { SetCapacity(capacity, fromTextBox: textBox); }
             }
             catch {
-                mainWindow.SetMessage("Capacity should be positive!");
+                mainWindow.SetMessage("Kapaciteta mora biti pozitivna!");
             }
         }
 
@@ -133,13 +176,6 @@ namespace MaxFlowVisualization_Winforms
             this.t = 0;
             this.n = 0;
         }
-
-#pragma warning disable CS1717 // Assignment made to same variable; did you mean to assign something else?
-        public void SetS(int index) { this.s = s; }
-#pragma warning restore CS1717 // Assignment made to same variable; did you mean to assign something else?
-#pragma warning disable CS1717 // Assignment made to same variable; did you mean to assign something else?
-        public void SetT(int index) { this.t = t; }
-#pragma warning restore CS1717 // Assignment made to same variable; did you mean to assign something else?
 
         //                                       ALGORITM CODE:
 

@@ -32,7 +32,7 @@ namespace MaxFlowVisualization_Winforms
         public void ResetAllProperties() {
             this.NumberOnScreen = 0;
             this.MaxNumber = 0;
-            this.removeLabelNodes();
+            this.RemoveLabelNodes();
         }
 
         public void AddLabelNodeInArray(Label label) {
@@ -40,17 +40,18 @@ namespace MaxFlowVisualization_Winforms
             this.NumberOnScreen++;
         }
 
-        public void addNewNodeLabel() {
+        public void AddNewNodeLabel() {
             if (this.NumberOnScreen >= this.MaxNumber)
                 return;
             // gets executed only when the number of nodes of screen is smaller than the max number of nodes
 
             // Add label:
-            Label newLabel = new Label  {
+            Label newLabel = new Label {
                 Location = mainWindow.Drawing.GetRelativeLocationOfLastClick(),
                 Name = "label_" + NumberOnScreen.ToString(),
-                Size = new Size(mainWindow.Drawing.CircleRadius, mainWindow.Drawing.CircleRadius), // as big as the circle, we will be draging it later
-                ForeColor = mainWindow.Drawing.PenColor,
+                Tag = NumberOnScreen.ToString(),
+                Size = new Size(Drawing.CircleRadius, Drawing.CircleRadius), // as big as the circle, we will be draging it later
+                ForeColor = Drawing.PenColor,
                 Text = NumberOnScreen.ToString().ToString()
             };
             mainWindow.Controls.Add(newLabel);
@@ -67,7 +68,7 @@ namespace MaxFlowVisualization_Winforms
             mainWindow.Drawing.DrawCircleAroundLastClick();
         }
 
-        public void removeLabelNodes() {
+        public void RemoveLabelNodes() {
             //foreach (Label labelNode in labelNodes)
             //TODO: erase label
             InitializeLabelArray(0); // empty array of labels
