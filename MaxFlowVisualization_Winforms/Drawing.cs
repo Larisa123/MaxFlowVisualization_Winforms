@@ -20,8 +20,9 @@ namespace MaxFlowVisualization_Winforms
         private Pen circlePen;
         private Pen connectionPen;// we need a different pen for drawing lines, because of line caps on connections
         private float penWidth;
-        public static Color PenColor;
         private Color backColor;
+
+        public static Color PenColor;
         public static int CircleRadius;
 
 
@@ -62,7 +63,7 @@ namespace MaxFlowVisualization_Winforms
             return new Point(x, y);
         }
         public void ClearDrawingArea() {
-            mainWindow.MaxFlow.LabelNodes.RemoveLabelNodes();
+            mainWindow.MaxFlow.Nodes.RemoveLabelNodes();
             this.area.Clear(backColor);
         }
 

@@ -18,9 +18,7 @@ namespace MaxFlowVisualization_Winforms
         public Point EndLocation { get; set; }
 
         public Label StartNodeLabel { get; set; }
-#pragma warning disable CS0649 // Field 'Drag.EndNodeLabel' is never assigned to, and will always have its default value null
         private Label EndNodeLabel;
-#pragma warning restore CS0649 // Field 'Drag.EndNodeLabel' is never assigned to, and will always have its default value null
 
         public bool IsActive { get; set; }
 

@@ -17,17 +17,15 @@ namespace MaxFlowVisualization_Winforms
     class MaxFlow {
         private MainWindow mainWindow;
 
-        private int s; // in node
-        private int t;// out node
         private int n; // matrix dimension
         private int[,] graph; // storing capacities on connections between nodes
 
         private ShouldAdd shouldAdd;
         // Nodes:
-        private LabelNodes labelNodes;
+        private Nodes nodes;
 
         // getter, setter:
-        internal LabelNodes LabelNodes { get => labelNodes; set => labelNodes = value; }
+        internal Nodes Nodes { get => nodes; set => nodes = value; }
         internal ShouldAdd ShouldAdd { get => shouldAdd; set => shouldAdd = value; }
 
         /// <summary>
@@ -35,17 +33,24 @@ namespace MaxFlowVisualization_Winforms
         /// </summary>
         public MaxFlow(MainWindow mainWindow) {
             this.mainWindow = mainWindow;
-            LabelNodes = new LabelNodes(mainWindow: this.mainWindow);
+            Nodes = new Nodes(mainWindow: this.mainWindow);
             this.ShouldAdd = ShouldAdd.Nothing;
 
             ResetGraph();
         }
 
+        public void ComputeSolution() {
+            // TODO: show the user how the program is solving this: path animations
+            MainWindow.AppState = AppState.Solving;
+
+            int result = GetMaxFlow();
+            mainWindow.SetMessage("Maksimalni pretok narisanega omrežja je: " + result); // temporary
+        }
 
         public void AddAppropriateNetworkComponent() {
             switch (this.ShouldAdd) {
                 case ShouldAdd.Node:
-                    LabelNodes.AddNewNodeLabel();
+                    Nodes.AddNewNodeLabel();
                     break;
                 case ShouldAdd.Connection:
                     addConnection(); // TODO: add this method to Connection class when you create it
@@ -62,7 +67,7 @@ namespace MaxFlowVisualization_Winforms
         /// Resets all properties associated with computing max flow - graph's dimension, number of current vertices etc.
         /// </summary>
         public void ResetGraph() {
-            labelNodes.ResetAllProperties();
+            nodes.ResetAllProperties();
             this.ResetAllProperties();
         }
 
@@ -114,40 +119,6 @@ namespace MaxFlowVisualization_Winforms
             return true;
         }
 
-        public void SetInOutNodes() {
-            MessageBox.Show(MessageText.SetSAndT);
-            MainWindow.AppState = AppState.SetS;
-        }
-        public void SetNode(string node, Label label) {
-            Font bold = new Font(label.Font, FontStyle.Bold);
-            label.Font = bold;
-
-            Label signLabel = new Label {
-                Name = node,
-                Size = new Size(Drawing.CircleRadius, Drawing.CircleRadius),
-                ForeColor = Drawing.PenColor,
-                Text = node.ToUpper()
-                
-            };
-            signLabel.Font = bold;
-
-            if (node == "s") {
-                this.s = int.Parse(label.Tag.ToString());
-                signLabel.Location = Drawing.PointSum(label.Location, new Point(-Drawing.CircleRadius * 2, 0));
-
-                MainWindow.AppState = AppState.SetT;
-            }
-            if (node == "t") {
-                this.t = int.Parse(label.Tag.ToString());
-                signLabel.Location = Drawing.PointSum(label.Location, new Point(Drawing.CircleRadius * 2, 0));
-
-                MainWindow.AppState = AppState.PreparedForSolving;
-            }
-
-            mainWindow.Controls.Add(signLabel);
-            signLabel.BringToFront();
-        }
-
         public void ChangeCapacity(TextBox textBox) {
             try {
                 int capacity = int.Parse(textBox.Text);
@@ -172,8 +143,8 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public void ResetAllProperties() {
-            this.s = 0;
-            this.t = 0;
+            Nodes.S = 0;
+            Nodes.T = 0;
             this.n = 0;
         }
 
@@ -192,9 +163,9 @@ namespace MaxFlowVisualization_Winforms
             // Create a queue, enqueue source vertex and mark
             // source vertex as visited
             LinkedList<int> vertexes = new LinkedList<int>();
-            vertexes.AddLast(s);
-            visited[s] = true;
-            parent[s] = -1;
+            vertexes.AddLast(Nodes.S);
+            visited[Nodes.S] = true;
+            parent[Nodes.S] = -1;
 
             // Standard BFS Loop
             while (vertexes.Count != 0)
@@ -216,7 +187,7 @@ namespace MaxFlowVisualization_Winforms
 
             // If we reached sink in BFS starting from source, then
             // return true, else false
-            return (visited[t] == true);
+            return (visited[Nodes.T] == true);
         }
 
         // Returns tne maximum flow from s to t in the given graph
@@ -251,7 +222,7 @@ namespace MaxFlowVisualization_Winforms
                 // along the path filled by BFS. Or we can say
                 // find the maximum flow through the path found.
                 int path_flow = int.MaxValue;
-                for (v = t; v != s; v = parent[v])
+                for (v = Nodes.T; v != Nodes.S; v = parent[v])
                 {
                     u = parent[v];
                     path_flow = Math.Min(path_flow, residualGraph[u, v]);
@@ -259,7 +230,7 @@ namespace MaxFlowVisualization_Winforms
 
                 // update residual capacities of the edges and
                 // reverse edges along the path
-                for (v = t; v != s; v = parent[v])
+                for (v = Nodes.T; v != Nodes.S; v = parent[v])
                 {
                     u = parent[v];
                     residualGraph[u, v] -= path_flow;

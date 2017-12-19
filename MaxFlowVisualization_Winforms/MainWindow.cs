@@ -56,12 +56,6 @@ namespace MaxFlowVisualization_Winforms {
         private void showExample() {
 
         }
-        /// <summary>
-        /// Solves the current example (either fixed or drawn), gets called after button click.
-        /// </summary>
-        private void solveCurrentExample() {
-
-        }
 
         private void updateMessage() { labelMainMessage.Text = message.getAppropriateMessage(AppState); }
         public void SetMessage(string message) { labelMainMessage.Text = message; }
@@ -94,12 +88,11 @@ namespace MaxFlowVisualization_Winforms {
                     enableSolveButton(false);
                     break;
                 case AppState.EndDrawing:
-                    maxFlow.SetInOutNodes();
-                    enableSolveButton(true);
-                    break;
+                    maxFlow.Nodes.SetInOutNodes();
+                    return;
                 case AppState.PreparedForSolving:
-                    solveCurrentExample();
-                    break;
+                    maxFlow.ComputeSolution();
+                    return;
                 case AppState.Solving:
                     enableSolveButton(false);
                     break;
@@ -108,7 +101,6 @@ namespace MaxFlowVisualization_Winforms {
                     Drawing.ClearDrawingArea();
                     break;
                 default:
-                    enableSolveButton(false);
                     break;
             }
         }
@@ -126,7 +118,7 @@ namespace MaxFlowVisualization_Winforms {
 
         private void entryFormEntryConfirmed(int entryValue) {
             maxFlow.InitializeGraph(entryValue);
-            maxFlow.LabelNodes.InitializeLabelArray(entryValue);
+            maxFlow.Nodes.InitializeLabelArray(entryValue);
             AppState = AppState.Drawing;
         }  
 
@@ -171,15 +163,19 @@ namespace MaxFlowVisualization_Winforms {
             if (AppState == AppState.EndDrawing)
                 processUserInput();
             else if (AppState == AppState.SetS) {
-                maxFlow.SetNode(node: "s", label: clickedLabel);
-            } else if (AppState == AppState.SetT)
-                maxFlow.SetNode(node: "t", label: clickedLabel);
+                maxFlow.Nodes.SetNode(node: "s", label: clickedLabel);
+            }
+            else if (AppState == AppState.SetT) {
+                maxFlow.Nodes.SetNode(node: "t", label: clickedLabel);
+                enableSolveButton(true);
+
+            }
         }
 
         public void labelNode_MouseUp(object sender, MouseEventArgs e) {
             if (drag.IsActive) {
                 drag.EndLocation = this.PointToClient(drawing.RelativeLocationInDrAreaOf(Cursor.Position));
-                if (drag.EndedInNode(nodeLabels: maxFlow.LabelNodes.array))
+                if (drag.EndedInNode(nodeLabels: maxFlow.Nodes.array))
                     maxFlow.ShouldAdd = ShouldAdd.Connection;
                     processUserInput();
             }
