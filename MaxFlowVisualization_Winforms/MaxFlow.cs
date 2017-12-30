@@ -1,5 +1,5 @@
 ﻿
-// Code from: http://www.geeksforgeeks.org/ford-fulkerson-algorithm-for-maximum-flow-problem/
+// Code after the ALGORITHM CODE comment from: http://www.geeksforgeeks.org/ford-fulkerson-algorithm-for-maximum-flow-problem/
 
 using System;
 using System.Linq;
@@ -11,34 +11,38 @@ using System.Drawing;
 
 namespace MaxFlowVisualization_Winforms
 {
-    enum ShouldAdd { Nothing, Node, Connection, Capacity }
+    enum ShouldAdd { Nothing, Node, Connection }
 
 
     class MaxFlow {
         private MainWindow mainWindow;
 
-        private int n; // matrix dimension
-        private int[,] graph; // storing capacities on connections between nodes
+        private static int n; // matrix dimension
+        private static int[,] graph; // storing capacities on connections between nodes
 
-        private ShouldAdd shouldAdd;
-        // Nodes:
-        private Nodes nodes;
+        private static ShouldAdd shouldAdd;
+
+        // Nodes, connections:
+        private Node node;
+        private Connection connection;
 
         // getter, setter:
-        internal Nodes Nodes { get => nodes; set => nodes = value; }
-        internal ShouldAdd ShouldAdd { get => shouldAdd; set => shouldAdd = value; }
+        internal Node Nodes { get => node; set => node = value; }
+        internal static ShouldAdd ShouldAdd { get => shouldAdd; set => shouldAdd = value; }
+        internal Connection Connection { get => connection; set => connection = value; }
 
         /// <summary>
         /// Initializes some properties - label nodes etc.
         /// </summary>
         public MaxFlow(MainWindow mainWindow) {
             this.mainWindow = mainWindow;
-            Nodes = new Nodes(mainWindow: this.mainWindow);
-            this.ShouldAdd = ShouldAdd.Nothing;
-
-            ResetGraph();
+            node = new Node(mainWindow: this.mainWindow);
+            connection = new Connection(mainWindow: this.mainWindow, maxFlow: this);
         }
 
+        /// <summary>
+        /// Calculates the solution of the max flow problem.
+        /// </summary>
         public void ComputeSolution() {
             // TODO: show the user how the program is solving this: path animations
             MainWindow.AppState = AppState.Solving;
@@ -47,16 +51,16 @@ namespace MaxFlowVisualization_Winforms
             mainWindow.SetMessage("Maksimalni pretok narisanega omrežja je: " + result); // temporary
         }
 
+        /// <summary>
+        /// Decides whether we should add a new node or a connection and adds it by invoking appropriate methods.
+        /// </summary>
         public void AddAppropriateNetworkComponent() {
-            switch (this.ShouldAdd) {
+            switch (ShouldAdd) {
                 case ShouldAdd.Node:
-                    Nodes.AddNewNodeLabel();
+                    node.AddNewNodeLabel();
                     break;
                 case ShouldAdd.Connection:
-                    addConnection(); // TODO: add this method to Connection class when you create it
-                    break;
-                case ShouldAdd.Capacity:
-                    addCapacity(); // TODO: add this method to Connection class when you create it
+                    connection.AddConnection(); // TODO: add this method to Connection class when you create it
                     break;
                 default:
                     break;
@@ -67,8 +71,10 @@ namespace MaxFlowVisualization_Winforms
         /// Resets all properties associated with computing max flow - graph's dimension, number of current vertices etc.
         /// </summary>
         public void ResetGraph() {
-            nodes.ResetAllProperties();
-            this.ResetAllProperties();
+            ShouldAdd = ShouldAdd.Nothing;
+            node.ResetAllProperties();
+            connection.ResetAllProperties();
+            this.ResetAllNumericProperties();
         }
 
         /// <summary>
@@ -80,72 +86,26 @@ namespace MaxFlowVisualization_Winforms
             try { return fordFulkerson(); } catch { return -1; } // if something goes wrong TODO: check which errors 
         }
 
-        private void addCapacity() {
-            // TODO: add this method to Connection class when you create it
-            // add location to screen:
-            int capacityPositionYMargin = 0; //TODO: add as property to Connection class
-            int middleX = (mainWindow.Drag.StartLocation.X + mainWindow.Drag.EndLocation.X) / 2;
-            int middleY = (mainWindow.Drag.StartLocation.Y + mainWindow.Drag.EndLocation.Y) / 2;
-            Point location = mainWindow.Drawing.RelativeLocation(new Point(middleX, middleY + capacityPositionYMargin));
-
-            // TODO: add appropriate name: connection_nodeIndex1_nodeIndex2, add to graph matrix
-            TextBox capacityText = new TextBox {
-                Location = location,
-                Text = "0",
-                MaximumSize = new Size(20, 20),
-                BackColor = mainWindow.BackColor,
-                BorderStyle = BorderStyle.None
-            };
-
-            mainWindow.Controls.Add(capacityText);
-            capacityText.BringToFront();
-
-            // subscribe label to mouse events (for connections):
-            capacityText.TextChanged += new EventHandler(mainWindow.capacity_TextChanged);
-        }
-        private void addConnection() {
-            // TODO: add this method to Connection class when you create it
-            //Console.WriteLine(mainWindow.);
-
-            Point startPoint = mainWindow.Drag.StartLocation;
-            Point endPoint = mainWindow.Drag.EndLocation;
-            mainWindow.Drawing.DrawLine(startPoint, endPoint);
-            ShouldAdd = ShouldAdd.Capacity;
-            AddAppropriateNetworkComponent();
-        }
-
+        /// <summary>
+        /// Checks and returns the boolean indicating whether the drawn graph is a network or just a graph.
+        /// </summary>
         public bool CheckIfDrawnGraphANetwork() {
             //TODO: implement this method to actually check this
             return true;
         }
 
-        public void ChangeCapacity(TextBox textBox) {
-            try {
-                int capacity = int.Parse(textBox.Text);
-                if (capacity < 0) {
-                    mainWindow.SetMessage("Kapaciteta more biti numerična!"); //TODO: add to messagetext
-                }
-                else { SetCapacity(capacity, fromTextBox: textBox); }
-            }
-            catch {
-                mainWindow.SetMessage("Kapaciteta mora biti pozitivna!");
-            }
-        }
-
-        public void SetCapacity(int nodeA, TextBox fromTextBox) {
-            // TODO: use spliting to get out start and end indexes of nodes
-            //graph[nodeA, nodeB] = capacity;
-        }
-
         public void InitializeGraph(int dimension) {
-            this.n = dimension;
-            this.graph = new int[this.n, this.n];
+            n = dimension;
+            graph = new int[n, n];
         }
 
-        public void ResetAllProperties() {
-            Nodes.S = 0;
-            Nodes.T = 0;
-            this.n = 0;
+        /// <summary>
+        /// Resets s, t and n - graph's dimension.
+        /// </summary>
+        public void ResetAllNumericProperties() {
+            Node.S = 0;
+            Node.T = 0;
+            n = 0;
         }
 
         //                                       ALGORITM CODE:
@@ -163,9 +123,9 @@ namespace MaxFlowVisualization_Winforms
             // Create a queue, enqueue source vertex and mark
             // source vertex as visited
             LinkedList<int> vertexes = new LinkedList<int>();
-            vertexes.AddLast(Nodes.S);
-            visited[Nodes.S] = true;
-            parent[Nodes.S] = -1;
+            vertexes.AddLast(Node.S);
+            visited[Node.S] = true;
+            parent[Node.S] = -1;
 
             // Standard BFS Loop
             while (vertexes.Count != 0)
@@ -187,7 +147,7 @@ namespace MaxFlowVisualization_Winforms
 
             // If we reached sink in BFS starting from source, then
             // return true, else false
-            return (visited[Nodes.T] == true);
+            return (visited[Node.T] == true);
         }
 
         // Returns tne maximum flow from s to t in the given graph
@@ -222,7 +182,7 @@ namespace MaxFlowVisualization_Winforms
                 // along the path filled by BFS. Or we can say
                 // find the maximum flow through the path found.
                 int path_flow = int.MaxValue;
-                for (v = Nodes.T; v != Nodes.S; v = parent[v])
+                for (v = Node.T; v != Node.S; v = parent[v])
                 {
                     u = parent[v];
                     path_flow = Math.Min(path_flow, residualGraph[u, v]);
@@ -230,7 +190,7 @@ namespace MaxFlowVisualization_Winforms
 
                 // update residual capacities of the edges and
                 // reverse edges along the path
-                for (v = Nodes.T; v != Nodes.S; v = parent[v])
+                for (v = Node.T; v != Node.S; v = parent[v])
                 {
                     u = parent[v];
                     residualGraph[u, v] -= path_flow;

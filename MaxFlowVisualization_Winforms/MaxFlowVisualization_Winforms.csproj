@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection.cs" />
     <Compile Include="Drag.cs" />
     <Compile Include="Drawing.cs" />
     <Compile Include="EnterNumberOfNodesForm.cs">
@@ -54,7 +55,7 @@
       <DependentUpon>EnterNumberOfNodesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Nodes.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="MaxFlow.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

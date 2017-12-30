@@ -12,33 +12,35 @@ namespace MaxFlowVisualization_Winforms
     /// <summary>
     /// Class for creating and storing nodes.
     /// </summary>
-    class Nodes {
+    class Node {
         private MainWindow mainWindow;
 
         public static int NumberOnScreen { get; set; }
         public static int MaxNumber { get; set; }
-        public Label[] array;
+        public static Label[] array;
         public static int S; // in node
         public static int T;// out node
 
-        public Nodes(MainWindow mainWindow) {
+        public Node(MainWindow mainWindow) {
             this.mainWindow = mainWindow;
             NumberOnScreen = 0;
         }
 
         public void InitializeLabelArray(int dimension) {
             MaxNumber = dimension;
-            this.array = new Label[MaxNumber];
+            array = new Label[MaxNumber];
         }
 
         public void ResetAllProperties() {
             NumberOnScreen = 0;
             MaxNumber = 0;
-            this.RemoveLabelNodes();
+            if (array != null)
+                this.removeLabelNodes();
+            InitializeLabelArray(0); // empty array of labels
         }
 
         public void AddLabelNodeInArray(Label label) {
-            this.array[NumberOnScreen] = label;
+            array[NumberOnScreen] = label;
             NumberOnScreen++;
         }
 
@@ -49,7 +51,7 @@ namespace MaxFlowVisualization_Winforms
 
             // Add label:
             Label newLabel = new Label {
-                Location = mainWindow.Drawing.GetRelativeLocationOfLastClick(),
+                Location = Drawing.GetRelativeLocationOfLastClick(),
                 Name = "label_" + NumberOnScreen.ToString(),
                 Tag = NumberOnScreen.ToString(),
                 Size = new Size(Drawing.CircleRadius, Drawing.CircleRadius), // as big as the circle, we will be draging it later
@@ -67,7 +69,7 @@ namespace MaxFlowVisualization_Winforms
             AddLabelNodeInArray(newLabel);
 
             // Draw circle around the label:
-            mainWindow.Drawing.DrawCircleAroundLastClick();
+            Drawing.DrawCircleAroundLastClick();
         }
 
         public void SetInOutNodes() {
@@ -104,10 +106,19 @@ namespace MaxFlowVisualization_Winforms
             signLabel.BringToFront();
         }
 
-        public void RemoveLabelNodes() {
-            //foreach (Label labelNode in labelNodes)
-            //TODO: erase label
-            InitializeLabelArray(0); // empty array of labels
+        private void removeLabelNodes() {
+            // TODO: add this reference to viri in seminarska: https://docs.microsoft.com/en-us/dotnet/framework/winforms/controls/how-to-add-to-or-remove-from-a-collection-of-controls-at-run-time
+
+            foreach (Label labelNode in array) {
+                if (mainWindow.Controls.Contains(labelNode)) {
+                    // We have to manually remove event handlers:
+                    labelNode.MouseDown -= new MouseEventHandler(mainWindow.labelNode_MouseDown);
+                    labelNode.MouseUp -= new MouseEventHandler(mainWindow.labelNode_MouseUp);
+
+                    mainWindow.Controls.Remove(labelNode); // removes the label from its control
+                    labelNode.Dispose(); // lets go of the reference preventing memory release
+                }
+            }
         }
     }
 }

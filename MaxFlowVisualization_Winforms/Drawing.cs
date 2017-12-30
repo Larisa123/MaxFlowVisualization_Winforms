@@ -12,15 +12,15 @@ namespace MaxFlowVisualization_Winforms
     class Drawing {
         private MainWindow mainWindow;
 
-        private Graphics area;
-        public Point AreaLoc; // drawing area location
+        private static Graphics area;
+        public static Point AreaLoc; // drawing area location
         // mouse position in drawing area coordinates, gets set everytime user clicks on drawing area in .Drawing mode:
-        public Point PositionInArea; // position in drawing area - where the user clicked to add a node
+        public static Point PositionInArea; // position in drawing area - where the user clicked to add a node
 
-        private Pen circlePen;
-        private Pen connectionPen;// we need a different pen for drawing lines, because of line caps on connections
-        private float penWidth;
-        private Color backColor;
+        private static Pen circlePen;
+        private static Pen connectionPen;// we need a different pen for drawing lines, because of line caps on connections
+        private static float penWidth;
+        private static Color backColor;
 
         public static Color PenColor;
         public static int CircleRadius;
@@ -30,8 +30,9 @@ namespace MaxFlowVisualization_Winforms
             this.mainWindow = mainWindow;
 
             area = drAreaComp.CreateGraphics();
+            area.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             AreaLoc = drAreaComp.Location;
-            this.backColor = drAreaComp.BackColor;
+            backColor = drAreaComp.BackColor;
             CircleRadius = 15;
             penWidth = 2F;
             PenColor = Color.DarkBlue;
@@ -40,31 +41,47 @@ namespace MaxFlowVisualization_Winforms
             connectionPen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
         }
 
-        public void DrawCircleAroundLastClick() {
+        public static void DrawCircleAroundLastClick() {
             Point circlePos = new Point(PositionInArea.X - CircleRadius, PositionInArea.Y - CircleRadius);
             Size circleSize = new Size(CircleRadius * 2, CircleRadius * 2);
-            this.area.DrawEllipse(circlePen, rect: new Rectangle(circlePos, circleSize));
+            area.DrawEllipse(circlePen, rect: new Rectangle(circlePos, circleSize));
         }
 
-        public void DrawLine(Point startPoint, Point endPoint) {
-            area.DrawLine(mainWindow.Drawing.connectionPen, startPoint, endPoint);
+        public static void DrawLine(Point startPoint, Point endPoint) {
+            area.DrawLine(connectionPen, startPoint, endPoint);
         }
 
         // TODO: change those methods so they make more sense (they do work)
-        public Point RelativeLocationInDrAreaOf(Point location) {
+        public static Point RelativeLocationInDrAreaOf(Point location) {
             return new Point(location.X - AreaLoc.X, location.Y - AreaLoc.Y);
         }
-        public Point RelativeLocation(Point location) {
+        public static Point RelativeLocation(Point location) {
             return new Point(location.X + AreaLoc.X, location.Y + AreaLoc.Y);
         }
-        public Point GetRelativeLocationOfLastClick() {
+
+        public static Point GetRelativeLocationCentered(Point location) {
+            int x = location.X - AreaLoc.X + CircleRadius / 3;
+            int y = location.Y - AreaLoc.Y + CircleRadius / 3;
+            return new Point(x, y);
+        }
+
+        public static Point GetRelativeLocationOfLastClick() {
             int x = PositionInArea.X + AreaLoc.X - CircleRadius / 3;
             int y = PositionInArea.Y + AreaLoc.Y - CircleRadius / 3;
             return new Point(x, y);
         }
         public void ClearDrawingArea() {
-            mainWindow.MaxFlow.Nodes.RemoveLabelNodes();
-            this.area.Clear(backColor);
+            area.Clear(backColor);
+            MainWindow.AppState = AppState.Initialized; // Go to default state
+            mainWindow.Reset(); // removes nodes and connections
+        }
+
+        public static bool LocationEndedInAreaAround(Point location, Point centerOfArea) {
+            Size areaSize = new Size(CircleRadius * 2, CircleRadius * 2);
+            Point center = RelativeLocationInDrAreaOf(centerOfArea);
+            Rectangle areaAroundCenter = new Rectangle(center, areaSize);
+
+            return areaAroundCenter.Contains(location);
         }
 
         public static Point PointSum(Point A, Point B) => new Point(A.X + B.X, A.Y + B.Y);
