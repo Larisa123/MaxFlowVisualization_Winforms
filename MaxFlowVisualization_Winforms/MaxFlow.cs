@@ -30,6 +30,7 @@ namespace MaxFlowVisualization_Winforms
         internal Node Nodes { get => node; set => node = value; }
         internal static ShouldAdd ShouldAdd { get => shouldAdd; set => shouldAdd = value; }
         internal Connection Connection { get => connection; set => connection = value; }
+        public static int[,] Graph { get => graph; set => graph = value; }
 
         /// <summary>
         /// Initializes some properties - label nodes etc.
@@ -96,7 +97,7 @@ namespace MaxFlowVisualization_Winforms
 
         public void InitializeGraph(int dimension) {
             n = dimension;
-            graph = new int[n, n];
+            Graph = new int[n, n];
         }
 
         /// <summary>
@@ -167,7 +168,7 @@ namespace MaxFlowVisualization_Winforms
 
             for (u = 0; u < n; u++)
                 for (v = 0; v < n; v++)
-                    residualGraph[u, v] = graph[u, v];
+                    residualGraph[u, v] = Graph[u, v];
 
             // This array is filled by BFS and to store path
             int[] parent = new int[n];

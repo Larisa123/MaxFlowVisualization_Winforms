@@ -36,23 +36,23 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public void ChangeCapacity(TextBox textBox) {
-            try  {
-                Console.WriteLine(textBox.Text);
-                int capacity = int.Parse(textBox.Text);
+            // names are constructed: connection_nodeA_nodeB
+            try {
+                int capacity = int.Parse(textBox.Text); // if not an int, an execption will be thrown
                 if (capacity < 0) {
-                    mainWindow.SetMessage("Kapaciteta more biti numerična!"); //TODO: add to messagetext
+                    mainWindow.SetMessage("Capacity should be positive!"); //TODO: add to messagetext
+                } else { // we can set it!
+                    string[] splittedText = textBox.Tag.ToString().Split('_');
+                    int nodeA = int.Parse(splittedText[1]);
+                    int nodeB = int.Parse(splittedText[2]);
+
+                    MaxFlow.Graph[nodeA, nodeB] = capacity;
                 }
-                else { SetCapacity(capacity, fromTextBox: textBox); }
-            }
-            catch{
-                mainWindow.SetMessage("Kapaciteta mora biti pozitivna!");
+            } catch {
+                mainWindow.SetMessage("Capacity should be numeric!");
             }
         }
 
-        public void SetCapacity(int nodeA, TextBox fromTextBox) {
-            // TODO: use spliting to get out start and end indexes of nodes
-            //graph[nodeA, nodeB] = capacity;
-        }
         private void addCapacity() {
             int middleX = (Drag.StartLocation.X + Drag.EndLocation.X) / 2;
             int middleY = (Drag.StartLocation.Y + Drag.EndLocation.Y) / 2;
