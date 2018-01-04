@@ -11,9 +11,14 @@ using System.Drawing;
 
 namespace MaxFlowVisualization_Winforms
 {
+    /// <summary>
+    /// Enum for telling us what we should be drawing on the area component on user clicks - a node or a connection
+    /// </summary>
     enum ShouldAdd { Nothing, Node, Connection }
 
-
+    /// <summary>
+    /// Stores everything releted to the algorithm, also stores references to the Connection and Node class.
+    /// </summary>
     class MaxFlow {
         private MainWindow mainWindow;
 
@@ -46,10 +51,21 @@ namespace MaxFlowVisualization_Winforms
         /// </summary>
         public void ComputeSolution() {
             // TODO: show the user how the program is solving this: path animations
-            MainWindow.AppState = AppState.Solving;
 
             int result = GetMaxFlow();
             mainWindow.SetMessage("Maksimalni pretok narisanega omrežja je: " + result); // temporary
+        }
+        /// <summary>
+        /// Only for debuging: prints the graph to the console.
+        /// </summary>
+        public static void printGraph() {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    Console.Write(graph[i, j]);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
         }
 
         /// <summary>
@@ -97,7 +113,7 @@ namespace MaxFlowVisualization_Winforms
 
         public void InitializeGraph(int dimension) {
             n = dimension;
-            Graph = new int[n, n];
+            graph = new int[n, n];
         }
 
         /// <summary>
@@ -151,9 +167,11 @@ namespace MaxFlowVisualization_Winforms
             return (visited[Node.T] == true);
         }
 
-        // Returns tne maximum flow from s to t in the given graph
-        int fordFulkerson()
-        {
+        /// <summary>
+        /// Returns tne maximum flow from s to t in the given graph.
+        /// </summary>
+        /// <returns></returns>
+        int fordFulkerson() {
             int u, v;
 
             // Create a residual graph and fill the residual graph

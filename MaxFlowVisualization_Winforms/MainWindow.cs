@@ -90,9 +90,10 @@ namespace MaxFlowVisualization_Winforms {
                     maxFlow.Nodes.SetInOutNodes();
                     return;
                 case AppState.PreparedForSolving:
-                    maxFlow.ComputeSolution();
+                    MaxFlow.ShouldAdd = ShouldAdd.Nothing;
                     return;
                 case AppState.Solving:
+                    maxFlow.ComputeSolution();
                     enableSolveButton(false);
                     break;
                 case AppState.ClearDrawingArea:

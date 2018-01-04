@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace MaxFlowVisualization_Winforms
 {
+    /// <summary>
+    /// Class for storing, adding, changing and deleting connections and capacities of the maxflow algorithm.
+    /// </summary>
     class Connection {
         private MainWindow mainWindow;
         private MaxFlow maxFlow;
@@ -36,13 +39,16 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public void ChangeCapacity(TextBox textBox) {
+            if (textBox.Text.Length == 0) // when we change the text to empty, we shouldnt read this
+                return;
+
             // names are constructed: connection_nodeA_nodeB
             try {
                 int capacity = int.Parse(textBox.Text); // if not an int, an execption will be thrown
                 if (capacity < 0) {
                     mainWindow.SetMessage("Capacity should be positive!"); //TODO: add to messagetext
                 } else { // we can set it!
-                    string[] splittedText = textBox.Tag.ToString().Split('_');
+                    string[] splittedText = textBox.Name.ToString().Split('_');
                     int nodeA = int.Parse(splittedText[1]);
                     int nodeB = int.Parse(splittedText[2]);
 

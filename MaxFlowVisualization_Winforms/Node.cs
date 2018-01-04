@@ -113,6 +113,9 @@ namespace MaxFlowVisualization_Winforms
             signLabel.BringToFront();
         }
 
+        /// <summary>
+        /// Removes nodes from the drawing area. Also releases them from memory.
+        /// </summary>
         private void removeLabelNodes() {
             // TODO: add this reference to viri in seminarska: https://docs.microsoft.com/en-us/dotnet/framework/winforms/controls/how-to-add-to-or-remove-from-a-collection-of-controls-at-run-time
 
@@ -128,6 +131,9 @@ namespace MaxFlowVisualization_Winforms
             }
         }
 
+        /// <summary>
+        /// Removes in out nodes from the drawing area (S and T).
+        /// </summary>
         private void removeInOutNodes() {
             if (mainWindow.Controls.Contains(labelS)) {
                 mainWindow.Controls.Remove(labelS); // removes the label from its control

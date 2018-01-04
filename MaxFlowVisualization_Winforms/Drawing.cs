@@ -37,8 +37,10 @@ namespace MaxFlowVisualization_Winforms
             penWidth = 2F;
             PenColor = Color.DarkBlue;
             circlePen = new Pen(PenColor, penWidth);
+
             connectionPen = new Pen(PenColor, penWidth);
-            connectionPen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
+            var bigArrow = new System.Drawing.Drawing2D.AdjustableArrowCap(5, 5);
+            connectionPen.CustomEndCap = bigArrow;
         }
 
         public static void DrawCircleAroundLastClick() {
@@ -48,6 +50,8 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public static void DrawLine(Point startPoint, Point endPoint) {
+            // we should start and end the line a bit after the node, so we dont have the arrow pointing
+            // directly in the center of the node
             area.DrawLine(connectionPen, startPoint, endPoint);
         }
 
