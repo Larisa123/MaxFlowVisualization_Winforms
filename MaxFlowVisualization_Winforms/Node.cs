@@ -61,6 +61,7 @@ namespace MaxFlowVisualization_Winforms
                 Tag = NumberOnScreen.ToString(),
                 Size = new Size(Drawing.CircleRadius, Drawing.CircleRadius), // as big as the circle, we will be draging it later
                 ForeColor = Drawing.PenColor,
+                Font = new Font("Source Sans Pro Light", 11),
                 Text = NumberOnScreen.ToString().ToString()
             };
             mainWindow.Controls.Add(newLabel);

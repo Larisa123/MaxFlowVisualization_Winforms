@@ -38,7 +38,8 @@
             // buttonOK
             // 
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(15, 79);
+            this.buttonOK.Font = new System.Drawing.Font("Source Sans Pro Light", 9.749999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonOK.Location = new System.Drawing.Point(24, 94);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(99, 23);
             this.buttonOK.TabIndex = 0;
@@ -48,7 +49,8 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(155, 79);
+            this.buttonCancel.Font = new System.Drawing.Font("Source Sans Pro Light", 9.749999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonCancel.Location = new System.Drawing.Point(175, 94);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(99, 23);
             this.buttonCancel.TabIndex = 1;
@@ -58,22 +60,24 @@
             // labelMessage
             // 
             this.labelMessage.AutoSize = true;
-            this.labelMessage.Location = new System.Drawing.Point(12, 27);
+            this.labelMessage.Font = new System.Drawing.Font("Source Sans Pro Light", 9.749999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelMessage.Location = new System.Drawing.Point(21, 35);
             this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(179, 13);
+            this.labelMessage.Size = new System.Drawing.Size(202, 16);
             this.labelMessage.TabIndex = 2;
             this.labelMessage.Text = "Prosim, Izberi število vozlišč omrežja:";
             // 
             // entryNumber
             // 
-            this.entryNumber.Location = new System.Drawing.Point(209, 25);
+            this.entryNumber.Font = new System.Drawing.Font("Source Sans Pro Light", 9.749999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.entryNumber.Location = new System.Drawing.Point(229, 33);
             this.entryNumber.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
             this.entryNumber.Name = "entryNumber";
-            this.entryNumber.Size = new System.Drawing.Size(45, 20);
+            this.entryNumber.Size = new System.Drawing.Size(45, 24);
             this.entryNumber.TabIndex = 3;
             this.entryNumber.ValueChanged += new System.EventHandler(this.entryNumber_ValueChanged);
             // 
@@ -83,11 +87,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(280, 114);
+            this.ClientSize = new System.Drawing.Size(302, 142);
             this.Controls.Add(this.entryNumber);
             this.Controls.Add(this.labelMessage);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "EnterNumberOfNodesForm";
             this.ShowIcon = false;
             this.Text = "Število vozlišč omrežja";

@@ -44,9 +44,10 @@
             // 
             // buttonDraw
             // 
-            this.buttonDraw.Location = new System.Drawing.Point(31, 363);
+            this.buttonDraw.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonDraw.Location = new System.Drawing.Point(31, 368);
             this.buttonDraw.Name = "buttonDraw";
-            this.buttonDraw.Size = new System.Drawing.Size(119, 23);
+            this.buttonDraw.Size = new System.Drawing.Size(119, 28);
             this.buttonDraw.TabIndex = 0;
             this.buttonDraw.Text = "Narisi omrežje";
             this.buttonDraw.UseVisualStyleBackColor = true;
@@ -55,9 +56,10 @@
             // buttonEndDrawing
             // 
             this.buttonEndDrawing.Enabled = false;
-            this.buttonEndDrawing.Location = new System.Drawing.Point(31, 392);
+            this.buttonEndDrawing.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonEndDrawing.Location = new System.Drawing.Point(31, 402);
             this.buttonEndDrawing.Name = "buttonEndDrawing";
-            this.buttonEndDrawing.Size = new System.Drawing.Size(119, 23);
+            this.buttonEndDrawing.Size = new System.Drawing.Size(119, 28);
             this.buttonEndDrawing.TabIndex = 1;
             this.buttonEndDrawing.Text = "Končaj z risanjem";
             this.buttonEndDrawing.UseVisualStyleBackColor = true;
@@ -66,9 +68,10 @@
             // buttonSolve
             // 
             this.buttonSolve.Enabled = false;
-            this.buttonSolve.Location = new System.Drawing.Point(212, 363);
+            this.buttonSolve.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonSolve.Location = new System.Drawing.Point(212, 368);
             this.buttonSolve.Name = "buttonSolve";
-            this.buttonSolve.Size = new System.Drawing.Size(119, 23);
+            this.buttonSolve.Size = new System.Drawing.Size(119, 28);
             this.buttonSolve.TabIndex = 2;
             this.buttonSolve.Text = "Reši problem";
             this.buttonSolve.UseVisualStyleBackColor = true;
@@ -76,9 +79,10 @@
             // 
             // buttonShowExample
             // 
-            this.buttonShowExample.Location = new System.Drawing.Point(391, 363);
+            this.buttonShowExample.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonShowExample.Location = new System.Drawing.Point(391, 368);
             this.buttonShowExample.Name = "buttonShowExample";
-            this.buttonShowExample.Size = new System.Drawing.Size(119, 23);
+            this.buttonShowExample.Size = new System.Drawing.Size(119, 28);
             this.buttonShowExample.TabIndex = 3;
             this.buttonShowExample.Text = "Pokaži zgled";
             this.buttonShowExample.UseVisualStyleBackColor = true;
@@ -87,18 +91,19 @@
             // labelAnimation
             // 
             this.labelAnimation.AutoSize = true;
-            this.labelAnimation.Location = new System.Drawing.Point(156, 397);
+            this.labelAnimation.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelAnimation.Location = new System.Drawing.Point(145, 454);
             this.labelAnimation.Name = "labelAnimation";
-            this.labelAnimation.Size = new System.Drawing.Size(52, 13);
+            this.labelAnimation.Size = new System.Drawing.Size(62, 18);
             this.labelAnimation.TabIndex = 5;
             this.labelAnimation.Text = "Animacija";
             this.labelAnimation.Visible = false;
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(212, 392);
+            this.progressBar1.Location = new System.Drawing.Point(212, 454);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(119, 23);
+            this.progressBar1.Size = new System.Drawing.Size(119, 18);
             this.progressBar1.TabIndex = 6;
             this.progressBar1.Value = 1;
             this.progressBar1.Visible = false;
@@ -106,23 +111,26 @@
             // labelTitle
             // 
             this.labelTitle.AutoSize = true;
+            this.labelTitle.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelTitle.Location = new System.Drawing.Point(28, 29);
             this.labelTitle.Name = "labelTitle";
-            this.labelTitle.Size = new System.Drawing.Size(303, 13);
+            this.labelTitle.Size = new System.Drawing.Size(365, 18);
             this.labelTitle.TabIndex = 7;
             this.labelTitle.Text = "Aplikacija reši problem maksimalnega pretoka za dano omrežje.";
             // 
             // labelMainMessage
             // 
             this.labelMainMessage.AutoSize = true;
+            this.labelMainMessage.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelMainMessage.Location = new System.Drawing.Point(28, 52);
             this.labelMainMessage.Name = "labelMainMessage";
-            this.labelMainMessage.Size = new System.Drawing.Size(363, 13);
+            this.labelMainMessage.Size = new System.Drawing.Size(434, 18);
             this.labelMainMessage.TabIndex = 8;
             this.labelMainMessage.Text = "Dodaj svoje omrežje z klikom na gumb \"Nariši omrežje\" ali poglej dani zgled.";
             // 
             // DrawingAreaComponent
             // 
+            this.DrawingAreaComponent.BackColor = System.Drawing.Color.WhiteSmoke;
             this.DrawingAreaComponent.Location = new System.Drawing.Point(31, 80);
             this.DrawingAreaComponent.Name = "DrawingAreaComponent";
             this.DrawingAreaComponent.Size = new System.Drawing.Size(479, 266);
@@ -133,9 +141,10 @@
             // buttonClearDrawingArea
             // 
             this.buttonClearDrawingArea.Enabled = false;
-            this.buttonClearDrawingArea.Location = new System.Drawing.Point(212, 421);
+            this.buttonClearDrawingArea.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonClearDrawingArea.Location = new System.Drawing.Point(212, 402);
             this.buttonClearDrawingArea.Name = "buttonClearDrawingArea";
-            this.buttonClearDrawingArea.Size = new System.Drawing.Size(119, 23);
+            this.buttonClearDrawingArea.Size = new System.Drawing.Size(119, 28);
             this.buttonClearDrawingArea.TabIndex = 10;
             this.buttonClearDrawingArea.Text = "Pobriši";
             this.buttonClearDrawingArea.UseVisualStyleBackColor = true;
@@ -146,7 +155,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(537, 473);
+            this.BackColor = System.Drawing.SystemColors.Menu;
+            this.ClientSize = new System.Drawing.Size(537, 498);
             this.Controls.Add(this.buttonClearDrawingArea);
             this.Controls.Add(this.DrawingAreaComponent);
             this.Controls.Add(this.labelMainMessage);
@@ -157,7 +167,8 @@
             this.Controls.Add(this.buttonSolve);
             this.Controls.Add(this.buttonEndDrawing);
             this.Controls.Add(this.buttonDraw);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Font = new System.Drawing.Font("Source Sans Pro Light", 8.999999F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainWindow";
             this.Text = "Maksimalni pretok skozi omrežje";
             ((System.ComponentModel.ISupportInitialize)(this.DrawingAreaComponent)).EndInit();

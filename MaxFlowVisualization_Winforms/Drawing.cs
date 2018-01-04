@@ -9,11 +9,13 @@ using System.Windows.Forms;
 
 namespace MaxFlowVisualization_Winforms
 {
+
     class Drawing {
         private MainWindow mainWindow;
 
         private static Graphics area;
         public static Point AreaLoc; // drawing area location
+        public static PictureBox drArea;
         // mouse position in drawing area coordinates, gets set everytime user clicks on drawing area in .Drawing mode:
         public static Point PositionInArea; // position in drawing area - where the user clicked to add a node
 
@@ -26,13 +28,17 @@ namespace MaxFlowVisualization_Winforms
         public static int CircleRadius;
 
 
+
         public Drawing(MainWindow mainWindow, PictureBox drAreaComp)  {
             this.mainWindow = mainWindow;
 
             area = drAreaComp.CreateGraphics();
             area.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+            drArea = drAreaComp;
             AreaLoc = drAreaComp.Location;
             backColor = drAreaComp.BackColor;
+
             CircleRadius = 15;
             penWidth = 2F;
             PenColor = Color.DarkBlue;
@@ -56,9 +62,7 @@ namespace MaxFlowVisualization_Winforms
             // (r cos(fi), r sin(fi))
 
             double fi = Math.Atan2(endPoint.Y - startPoint.Y, endPoint.X - startPoint.X);
-            Console.WriteLine(fi);
             Point margin = new Point((int)(Drawing.CircleRadius * Math.Cos(fi)), (int)(Drawing.CircleRadius * Math.Sin(fi)));
-            Console.WriteLine(margin.ToString());
             area.DrawLine(connectionPen, PointSum(startPoint, margin), PointDiff(endPoint, margin));
         }
 
@@ -77,8 +81,8 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public static Point GetRelativeLocationOfLastClick() {
-            int x = PositionInArea.X + AreaLoc.X - CircleRadius / 3;
-            int y = PositionInArea.Y + AreaLoc.Y - CircleRadius / 3;
+            int x = PositionInArea.X + AreaLoc.X - CircleRadius / 3 - 2;
+            int y = PositionInArea.Y + AreaLoc.Y - CircleRadius / 3 - 3;
             return new Point(x, y);
         }
         public void ClearDrawingArea() {

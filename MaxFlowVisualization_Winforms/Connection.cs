@@ -34,6 +34,11 @@ namespace MaxFlowVisualization_Winforms
         public void AddConnection() {
             Point startPoint = Drag.StartLocation;
             Point endPoint = Drag.EndLocation;
+
+            // We cant have cycles, we shouldnt add a connection between two nodes that are the same
+            if (Drag.EndNodeLabel.Name == Drag.StartNodeLabel.Name)
+                return;
+
             Drawing.DrawLine(startPoint, endPoint);
             addCapacity();
         }
@@ -68,8 +73,9 @@ namespace MaxFlowVisualization_Winforms
                 Location = location,
                 Name = "connection_" + Drag.StartNodeLabel.Tag + "_" + Drag.EndNodeLabel.Tag,// connection_nodeIndex1_nodeIndex2
                 Text = "0",
-                MaximumSize = new Size(20, 20),
-                BackColor = mainWindow.BackColor,
+                MaximumSize = new Size(17, 17),
+                BackColor = Drawing.drArea.BackColor,
+                Font = new Font("Source Sans Pro Light", 11),
                 BorderStyle = BorderStyle.None
             };
 

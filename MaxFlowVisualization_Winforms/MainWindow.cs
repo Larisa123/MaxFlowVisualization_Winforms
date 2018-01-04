@@ -70,6 +70,7 @@ namespace MaxFlowVisualization_Winforms {
                     //TODO
                     break;
                 case AppState.ShowExample:
+                    Drawing.ClearDrawingArea();
                     showExample();
                     enableSolveButton(true);
                     enableClearButton(true);
