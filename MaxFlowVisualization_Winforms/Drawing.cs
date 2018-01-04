@@ -51,8 +51,15 @@ namespace MaxFlowVisualization_Winforms
 
         public static void DrawLine(Point startPoint, Point endPoint) {
             // we should start and end the line a bit after the node, so we dont have the arrow pointing
-            // directly in the center of the node
-            area.DrawLine(connectionPen, startPoint, endPoint);
+            // directly in the center of the node.
+            // we can do this using this equation: tan(fi) = y/x and a point on a circle with radius r is:
+            // (r cos(fi), r sin(fi))
+
+            double fi = Math.Atan2(endPoint.Y - startPoint.Y, endPoint.X - startPoint.X);
+            Console.WriteLine(fi);
+            Point margin = new Point((int)(Drawing.CircleRadius * Math.Cos(fi)), (int)(Drawing.CircleRadius * Math.Sin(fi)));
+            Console.WriteLine(margin.ToString());
+            area.DrawLine(connectionPen, PointSum(startPoint, margin), PointDiff(endPoint, margin));
         }
 
         // TODO: change those methods so they make more sense (they do work)
@@ -89,5 +96,6 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public static Point PointSum(Point A, Point B) => new Point(A.X + B.X, A.Y + B.Y);
+        public static Point PointDiff(Point A, Point B) => new Point(A.X - B.X, A.Y - B.Y);
     }
 }
