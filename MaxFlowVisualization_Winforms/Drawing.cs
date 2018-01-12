@@ -21,6 +21,9 @@ namespace MaxFlowVisualization_Winforms
 
         private static Pen circlePen;
         private static Pen connectionPen;// we need a different pen for drawing lines, because of line caps on connections
+        private static Pen flowConnectionPen; // pen for flow animations
+        private static Color flowPenColor;
+
         private static float penWidth;
         private static Color backColor;
 
@@ -42,11 +45,16 @@ namespace MaxFlowVisualization_Winforms
             CircleRadius = 15;
             penWidth = 2F;
             PenColor = Color.DarkBlue;
+            flowPenColor = Color.OrangeRed;
             circlePen = new Pen(PenColor, penWidth);
 
+            // line pens:
+            flowConnectionPen = new Pen(flowPenColor, penWidth);
             connectionPen = new Pen(PenColor, penWidth);
+            // line pen arrows:
             var bigArrow = new System.Drawing.Drawing2D.AdjustableArrowCap(5, 5);
             connectionPen.CustomEndCap = bigArrow;
+            flowConnectionPen.CustomEndCap = bigArrow;
         }
 
         public static void DrawCircleAroundLastClick() {
@@ -55,7 +63,11 @@ namespace MaxFlowVisualization_Winforms
             area.DrawEllipse(circlePen, rect: new Rectangle(circlePos, circleSize));
         }
 
-        public static void DrawLine(Point startPoint, Point endPoint) {
+        /// <summary>
+        /// Draws a line between two locations (points). Draws a connection line with a cap between two label nodes in blue or red, 
+        /// depending on whether we are showing the flow animation or removing the flow animation (going over with previous line color).
+        /// </summary>
+        public static void DrawLine(Point startPoint, Point endPoint, bool flowLine) {
             // we should start and end the line a bit after the node, so we dont have the arrow pointing
             // directly in the center of the node.
             // we can do this using this equation: tan(fi) = y/x and a point on a circle with radius r is:
@@ -63,8 +75,30 @@ namespace MaxFlowVisualization_Winforms
 
             double fi = Math.Atan2(endPoint.Y - startPoint.Y, endPoint.X - startPoint.X);
             Point margin = new Point((int)(Drawing.CircleRadius * Math.Cos(fi)), (int)(Drawing.CircleRadius * Math.Sin(fi)));
-            area.DrawLine(connectionPen, PointSum(startPoint, margin), PointDiff(endPoint, margin));
+            var linePen = (flowLine) ? flowConnectionPen : connectionPen;
+
+            // so we drag the line to the actual center:
+            startPoint = GetRelativeLocationCentered(startPoint);
+            endPoint= GetRelativeLocationCentered(endPoint);
+
+            area.DrawLine(linePen, PointSum(startPoint, margin), PointDiff(endPoint, margin));
         }
+
+        public void ClearDrawingArea() {
+            area.Clear(backColor);
+            MainWindow.AppState = AppState.Initialized; // Go to default state
+            mainWindow.Reset(); // removes nodes and connections
+        }
+
+        public static bool LocationEndedInAreaAround(Point location, Point centerOfArea) {
+            Size areaSize = new Size(CircleRadius * 2, CircleRadius * 2);
+            Point center = RelativeLocationInDrAreaOf(centerOfArea);
+            Rectangle areaAroundCenter = new Rectangle(center, areaSize);
+
+            return areaAroundCenter.Contains(location);
+        }
+
+        // Relative location calculations and point calculations:
 
         // TODO: change those methods so they make more sense (they do work)
         public static Point RelativeLocationInDrAreaOf(Point location) {
@@ -84,19 +118,6 @@ namespace MaxFlowVisualization_Winforms
             int x = PositionInArea.X + AreaLoc.X - CircleRadius / 3 - 2;
             int y = PositionInArea.Y + AreaLoc.Y - CircleRadius / 3 - 3;
             return new Point(x, y);
-        }
-        public void ClearDrawingArea() {
-            area.Clear(backColor);
-            MainWindow.AppState = AppState.Initialized; // Go to default state
-            mainWindow.Reset(); // removes nodes and connections
-        }
-
-        public static bool LocationEndedInAreaAround(Point location, Point centerOfArea) {
-            Size areaSize = new Size(CircleRadius * 2, CircleRadius * 2);
-            Point center = RelativeLocationInDrAreaOf(centerOfArea);
-            Rectangle areaAroundCenter = new Rectangle(center, areaSize);
-
-            return areaAroundCenter.Contains(location);
         }
 
         public static Point PointSum(Point A, Point B) => new Point(A.X + B.X, A.Y + B.Y);

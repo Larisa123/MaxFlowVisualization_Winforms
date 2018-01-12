@@ -88,7 +88,8 @@ namespace MaxFlowVisualization_Winforms {
                     enableClearButton(true);
                     break;
                 case AppState.EndDrawing:
-                    maxFlow.Nodes.SetInOutNodes();
+                    maxFlow.Connection.DeactivateTextBoxes(); // so we cant change the capacities anymore
+                    maxFlow.Node.SetInOutNodes();
                     return;
                 case AppState.PreparedForSolving:
                     MaxFlow.ShouldAdd = ShouldAdd.Nothing;
@@ -121,7 +122,6 @@ namespace MaxFlowVisualization_Winforms {
 
         private void entryFormEntryConfirmed(int entryValue) {
             maxFlow.InitializeGraph(entryValue);
-            maxFlow.Nodes.InitializeLabelArray(entryValue);
             AppState = AppState.Drawing;
         }
 
@@ -175,10 +175,10 @@ namespace MaxFlowVisualization_Winforms {
             if (AppState == AppState.EndDrawing)
                 processUserInput();
             else if (AppState == AppState.SetS) {
-                maxFlow.Nodes.SetNode(node: "s", label: clickedLabel);
+                maxFlow.Node.SetNode(node: "s", label: clickedLabel);
             }
             else if (AppState == AppState.SetT) {
-                maxFlow.Nodes.SetNode(node: "t", label: clickedLabel);
+                maxFlow.Node.SetNode(node: "t", label: clickedLabel);
                 enableSolveButton(true);
 
             }

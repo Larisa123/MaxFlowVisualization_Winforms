@@ -32,7 +32,7 @@ namespace MaxFlowVisualization_Winforms
         private Connection connection;
 
         // getter, setter:
-        internal Node Nodes { get => node; set => node = value; }
+        internal Node Node { get => node; set => node = value; }
         internal static ShouldAdd ShouldAdd { get => shouldAdd; set => shouldAdd = value; }
         internal Connection Connection { get => connection; set => connection = value; }
         public static int[,] Graph { get => graph; set => graph = value; }
@@ -46,6 +46,16 @@ namespace MaxFlowVisualization_Winforms
             connection = new Connection(mainWindow: this.mainWindow, maxFlow: this);
         }
 
+        public void InitializeGraph(int dimension) {
+            n = dimension;
+            graph = new int[n, n];
+
+            // initialize nodes and capacity (text boxes) matrix:
+            Node.InitializeLabelArray(n);
+            Connection.initializeCapacityMatrix(n);
+        }
+
+
         /// <summary>
         /// Calculates the solution of the max flow problem.
         /// </summary>
@@ -58,10 +68,10 @@ namespace MaxFlowVisualization_Winforms
         /// <summary>
         /// Only for debuging: prints the graph to the console.
         /// </summary>
-        public static void printGraph() {
+        public static void printGraph(int[,] graphInput) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    Console.Write(graph[i, j]);
+                    Console.Write(graphInput[i, j]);
                 }
                 Console.WriteLine();
             }
@@ -111,11 +121,6 @@ namespace MaxFlowVisualization_Winforms
             return true;
         }
 
-        public void InitializeGraph(int dimension) {
-            n = dimension;
-            graph = new int[n, n];
-        }
-
         /// <summary>
         /// Resets s, t and n - graph's dimension.
         /// </summary>
@@ -123,6 +128,18 @@ namespace MaxFlowVisualization_Winforms
             Node.S = 0;
             Node.T = 0;
             n = 0;
+        }
+
+        /// <summary>
+        /// Sets capacities (textbox values) to the actual flow until then.
+        /// </summary>
+        private void setProperCapacityValues(int[,] rGraph) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    Console.Write(rGraph[i, j]);
+                    Connection.ChangeCapacity(i, j, value: rGraph[i, j]);
+                }
+            }
         }
 
         //                                       ALGORITM CODE:
@@ -195,25 +212,27 @@ namespace MaxFlowVisualization_Winforms
 
             // Augment the flow while tere is path from source
             // to sink
-            while (isThereAPathFromSToT(residualGraph, parent))
-            {
+            while (isThereAPathFromSToT(residualGraph, parent)) {
                 // Find minimum residual capacity of the edhes
                 // along the path filled by BFS. Or we can say
                 // find the maximum flow through the path found.
                 int path_flow = int.MaxValue;
-                for (v = Node.T; v != Node.S; v = parent[v])
-                {
+                for (v = Node.T; v != Node.S; v = parent[v]) {
                     u = parent[v];
                     path_flow = Math.Min(path_flow, residualGraph[u, v]);
                 }
 
                 // update residual capacities of the edges and
                 // reverse edges along the path
-                for (v = Node.T; v != Node.S; v = parent[v])
-                {
+                for (v = Node.T; v != Node.S; v = parent[v]) {
                     u = parent[v];
                     residualGraph[u, v] -= path_flow;
                     residualGraph[v, u] += path_flow;
+
+                    // draw a flow line (for algorithm visualization):
+                    Point nodeALoc = Node.array[u].Location;
+                    Point nodeBLoc = Node.array[v].Location;
+                    Drawing.DrawLine(nodeALoc, nodeBLoc, flowLine: true);
                 }
 
                 // Add path flow to overall flow
@@ -221,6 +240,7 @@ namespace MaxFlowVisualization_Winforms
             }
 
             // Return the overall flow
+            setProperCapacityValues(residualGraph);
             return max_flow;
         }
     }

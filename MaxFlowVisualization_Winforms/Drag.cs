@@ -39,8 +39,8 @@ namespace MaxFlowVisualization_Winforms
             foreach (Label labelNode in Node.array) {
                 if (Drawing.LocationEndedInAreaAround(location: EndLocation, centerOfArea: labelNode.Location)) {
                     EndNodeLabel = labelNode;
-                    EndLocation = Drawing.GetRelativeLocationCentered(labelNode.Location); // so we drag the line to the actual center
-                    StartLocation = Drawing.GetRelativeLocationCentered(StartNodeLabel.Location); // so we drag the line to the actual center
+                    EndLocation = labelNode.Location; 
+                    StartLocation = StartNodeLabel.Location;
                     return true;
                 }
             }
