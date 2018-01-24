@@ -14,19 +14,6 @@ namespace MaxFlowVisualization_Winforms
     /// Contains informations about the drag being active, drag start and end labels.
     /// </summary>
     class Drag {
-        /*
-        private static Point _StartLocation;
-        private static Point _EndLocation;
-        public static Point StartLocation {
-            get { return _StartLocation; }
-            set { _StartLocation = Drawing.GetRelativeLocationCentered(value); } // centered
-        }
-        public static Point EndLocation {
-            get { return _EndLocation; }
-            set { _EndLocation = Drawing.GetRelativeLocationCentered(value); } // so we drag the line to the actual center
-        }
-        */
-
         public static Point StartLocation { get; set; }
         public static Point EndLocation { get; set; }
 
@@ -44,8 +31,7 @@ namespace MaxFlowVisualization_Winforms
                     return true;
                 }
             }
-
-            return false;
+            return false; // if it didnt end in any of the nodes
         }
     }
 }

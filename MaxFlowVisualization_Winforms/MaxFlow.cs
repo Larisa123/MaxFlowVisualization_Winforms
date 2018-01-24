@@ -134,10 +134,14 @@ namespace MaxFlowVisualization_Winforms
         /// Sets capacities (textbox values) to the actual flow until then.
         /// </summary>
         private void setProperCapacityValues(int[,] rGraph) {
+            printGraph(Graph);
+            printGraph(rGraph);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    Console.Write(rGraph[i, j]);
                     Connection.ChangeCapacity(i, j, value: rGraph[i, j]);
+
+                    if (rGraph[i, j] > 0) // draw a connection in a new color
+                        Drawing.DrawLine(i, j, flowLine: true);
                 }
             }
         }
@@ -230,9 +234,7 @@ namespace MaxFlowVisualization_Winforms
                     residualGraph[v, u] += path_flow;
 
                     // draw a flow line (for algorithm visualization):
-                    Point nodeALoc = Node.array[u].Location;
-                    Point nodeBLoc = Node.array[v].Location;
-                    Drawing.DrawLine(nodeALoc, nodeBLoc, flowLine: true);
+                    //Drawing.DrawLine(u, v, flowLine: true);
                 }
 
                 // Add path flow to overall flow

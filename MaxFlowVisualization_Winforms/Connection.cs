@@ -47,6 +47,13 @@ namespace MaxFlowVisualization_Winforms
         }
 
         /// <summary>
+        /// Used to add the connection from the fixed example
+        /// </summary>>
+        public void AddConnection(Point startPoint, Point endPoint) {
+            Drawing.DrawLine(startPoint, endPoint, flowLine: false);
+        }
+
+        /// <summary>
         /// Changes the capacity stored in the MaxFlow matrix, called when the user changes the textbox's text.
         /// </summary>
         public void ChangeCapacity(TextBox textBox) {
@@ -80,16 +87,27 @@ namespace MaxFlowVisualization_Winforms
         }
 
         private void addCapacity() {
-            // where to add:
-            int middleX = (Drag.StartLocation.X + Drag.EndLocation.X) / 2;
-            int middleY = (Drag.StartLocation.Y + Drag.EndLocation.Y) / 2;
+            int nodeA = int.Parse(Drag.StartNodeLabel.Tag.ToString());
+            int nodeB = int.Parse(Drag.EndNodeLabel.Tag.ToString());
+
+            AddCapacity(startPoint: Drag.StartLocation, 
+                        endPoint: Drag.EndLocation, 
+                        startNode: nodeA, 
+                        endNode: nodeB, 
+                        capacity: 0);
+        }
+
+        public void AddCapacity(Point startPoint, Point endPoint, int startNode, int endNode, int capacity) {
+            int middleX = (startPoint.X + endPoint.X) / 2;
+            int middleY = (startPoint.Y + endPoint.Y) / 2;
             Point location = Drawing.GetRelativeLocationCentered(Drawing.RelativeLocation(new Point(middleX, middleY)));
 
             // the actual text box:
-            TextBox capacityText = new TextBox {
+            TextBox capacityText = new TextBox
+            {
                 Location = location,
-                Name = "connection_" + Drag.StartNodeLabel.Tag + "_" + Drag.EndNodeLabel.Tag,// name is connection_nodeIndex1_nodeIndex2
-                Text = "0", // initial value
+                Name = "connection_" + startNode + "_" + endNode,// name is connection_nodeIndex1_nodeIndex2
+                Text = capacity.ToString(), // initial value
                 MaximumSize = new Size(20, 17),
                 BackColor = Drawing.drArea.BackColor,
                 Font = new Font("Source Sans Pro Light", 11),
@@ -104,9 +122,9 @@ namespace MaxFlowVisualization_Winforms
             capacityText.TextChanged += new EventHandler(mainWindow.capacity_TextChanged);
 
             // store capacities (actually text boxes, values are stored in maxflow's graph)
-            int nodeA = int.Parse(Drag.StartNodeLabel.Tag.ToString());
-            int nodeB = int.Parse(Drag.EndNodeLabel.Tag.ToString());
-            capacityMatrix[nodeA, nodeB] = capacityText;
+            capacityMatrix[startNode, endNode] = capacityText;
+            if (capacity > 0)
+                MaxFlow.Graph[startNode, endNode] = capacity;
 
             MaxFlow.ShouldAdd = ShouldAdd.Nothing;
         }

@@ -84,6 +84,13 @@ namespace MaxFlowVisualization_Winforms
             area.DrawLine(linePen, PointSum(startPoint, margin), PointDiff(endPoint, margin));
         }
 
+        public static void DrawLine(int startNode, int endNode, bool flowLine) {
+            Point startPoint = Node.array[startNode].Location;
+            Point endPoint = Node.array[endNode].Location;
+
+            DrawLine(startPoint, endPoint, flowLine);
+        }
+
         public void ClearDrawingArea() {
             area.Clear(backColor);
             MainWindow.AppState = AppState.Initialized; // Go to default state
@@ -91,7 +98,7 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public static bool LocationEndedInAreaAround(Point location, Point centerOfArea) {
-            Size areaSize = new Size(CircleRadius * 2, CircleRadius * 2);
+            Size areaSize = new Size(CircleRadius * 3, CircleRadius * 3);
             Point center = RelativeLocationInDrAreaOf(centerOfArea);
             Rectangle areaAroundCenter = new Rectangle(center, areaSize);
 
@@ -117,6 +124,12 @@ namespace MaxFlowVisualization_Winforms
         public static Point GetRelativeLocationOfLastClick() {
             int x = PositionInArea.X + AreaLoc.X - CircleRadius / 3 - 2;
             int y = PositionInArea.Y + AreaLoc.Y - CircleRadius / 3 - 3;
+            return new Point(x, y);
+        }
+
+        public static Point centerTheLocation(Point loc) {
+            int x = loc.X + 2;
+            int y = loc.Y + 2;
             return new Point(x, y);
         }
 

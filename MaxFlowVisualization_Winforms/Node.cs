@@ -54,9 +54,14 @@ namespace MaxFlowVisualization_Winforms
                 return;
             // gets executed only when the number of nodes of screen is smaller than the max number of nodes
 
-            // Add label:
+            AddNewNodeLabel(Drawing.GetRelativeLocationOfLastClick(), false);
+        }
+
+        public void AddNewNodeLabel(Point location, bool fixedExample) {
+
+            // Create label:
             Label newLabel = new Label {
-                Location = Drawing.GetRelativeLocationOfLastClick(),
+                Location = location,
                 Name = "label_" + NumberOnScreen.ToString(),
                 Tag = NumberOnScreen.ToString(),
                 Size = new Size(Drawing.CircleRadius, Drawing.CircleRadius), // as big as the circle, we will be draging it later
@@ -64,6 +69,7 @@ namespace MaxFlowVisualization_Winforms
                 Font = new Font("Source Sans Pro Light", 11),
                 Text = NumberOnScreen.ToString().ToString()
             };
+            // add label:
             mainWindow.Controls.Add(newLabel);
             newLabel.BringToFront();
 
@@ -75,6 +81,8 @@ namespace MaxFlowVisualization_Winforms
             AddLabelNodeInArray(newLabel);
 
             // Draw circle around the label:
+            if (fixedExample)
+                Drawing.PositionInArea = Drawing.GetRelativeLocationCentered(Drawing.centerTheLocation(location));
             Drawing.DrawCircleAroundLastClick();
         }
 

@@ -54,7 +54,49 @@ namespace MaxFlowVisualization_Winforms {
         /// Shows a fixed example of a network.
         /// </summary>
         private void showExample() {
+            Point[] fixedNodeLocs = new Point[] {
+                new Point(70, 190),
+                new Point(150, 130),
+                new Point(150, 270),
+                new Point(270, 110),
+                new Point(270, 270),
+                new Point(370, 190),
+            };
+            int[][] connections = new int[][] {
+                new int[] {0, 1, 3},
+                new int[] {0, 2, 3},
+                new int[] {1, 2, 2},
+                new int[] {1, 3, 3},
+                new int[] {3, 4, 4},
+                new int[] {2, 4, 2},
+                new int[] {3, 5, 2},
+                new int[] {4, 5, 3},
+            };
 
+            // initialize and set MaxFlow properties (arrays etc):
+            MaxFlow.InitializeGraph(fixedNodeLocs.Length);
+
+            // add nodes and connections:
+            foreach (Point nodeLoc in fixedNodeLocs) 
+                MaxFlow.Node.AddNewNodeLabel(nodeLoc, fixedExample: true);
+            
+            foreach (int[] connection in connections) {
+                int nodeA = connection[0];
+                int nodeB = connection[1];
+                int capacity = connection[2];
+
+                MaxFlow.Connection.AddConnection(startPoint: fixedNodeLocs[nodeA], endPoint: fixedNodeLocs[nodeB]);
+                MaxFlow.Connection.AddCapacity(startPoint: fixedNodeLocs[nodeA],
+                                               endPoint: fixedNodeLocs[nodeB],
+                                               capacity: capacity,
+                                               startNode: nodeA,
+                                               endNode: nodeB
+                                               );
+            }
+
+            // set in out nodes:
+            MaxFlow.Node.SetNode("s", Node.array[0]);
+            MaxFlow.Node.SetNode("t", Node.array[fixedNodeLocs.Length - 1]);
         }
 
         private void updateMessage() { labelMainMessage.Text = message.getAppropriateMessage(AppState); }
@@ -67,7 +109,6 @@ namespace MaxFlowVisualization_Winforms {
             switch (AppState) {
                 case AppState.Initialized:
                     enableClearButton(false);
-                    //TODO
                     break;
                 case AppState.ShowExample:
                     Drawing.ClearDrawingArea();
@@ -76,6 +117,7 @@ namespace MaxFlowVisualization_Winforms {
                     enableClearButton(true);
                     break;
                 case AppState.Draw:
+                    Drawing.ClearDrawingArea();
                     enableSolveButton(false);
                     showEntryBox();
                     MaxFlow.ShouldAdd = ShouldAdd.Node;
@@ -209,6 +251,15 @@ namespace MaxFlowVisualization_Winforms {
 
 
     enum AppState {
-        Initialized, ShowExample, PreparedForSolving, Solving, Draw, Drawing, EndDrawing, SetS, SetT, ClearDrawingArea
+        Initialized, // default state
+        ShowExample, // // gets set after the user clicks Show example button
+        PreparedForSolving, // gets set after the user sets both S and T, means we can solve the problem now
+        Solving, // in the process of solving the problem
+        Draw, // gets set after Draw graph button click, asks the user for number of nodes in his graph
+        Drawing, // in this state the user is able to add nodes and connections, gets set after the number of nodes is set
+        EndDrawing, // after this button click, the user is able to set S, T and then click on Solve button (gets activated)
+        SetS, // gets set after the user clicks button End drawing, after that
+        SetT, // this state gets set
+        ClearDrawingArea // gets set after the user clicks Clear drawing area button
     }
 }
