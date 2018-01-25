@@ -78,9 +78,9 @@ namespace MaxFlowVisualization_Winforms
         }
 
         /// <summary>
-        /// Changes capacity text, so we see how algorithm is working.
+        /// Changes capacity text to flow/capacity, so we see how algorithm is working.
         /// </summary>
-        public static void ChangeCapacity(int i, int j, int value) {
+        public static void ChangeShownCapacity(int i, int j, int value) {
             TextBox textBox = capacityMatrix[i, j];
             if (textBox != null)
                 textBox.Text =  String.Format("{0}/{1}", value, MaxFlow.Graph[i, j]);
@@ -133,6 +133,20 @@ namespace MaxFlowVisualization_Winforms
             foreach (TextBox textBox in capacityMatrix) {
                 if (textBox != null)
                     textBox.ReadOnly = true;
+            }
+        }
+
+        public static void ShowZeroFlow() {
+            string[] splittedText;
+            int nodeA, nodeB;
+
+            foreach (TextBox capacityBox in capacityMatrix) {
+                if (capacityBox != null) {
+                    splittedText = capacityBox.Name.Split('_');
+                    nodeA = int.Parse(splittedText[1]);
+                    nodeB = int.Parse(splittedText[2]);
+                    ChangeShownCapacity(nodeA, nodeB, 0);
+                }
             }
         }
 

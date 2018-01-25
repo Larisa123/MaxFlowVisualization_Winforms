@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading.Tasks;
 
 
 
@@ -30,6 +31,9 @@ namespace MaxFlowVisualization_Winforms
         // Nodes, connections:
         private Node node;
         private Connection connection;
+
+        private static int waitBetweenEachConnection = 1500;
+        private static int waitBeetwenEachPath = 1000;
 
         // getter, setter:
         internal Node Node { get => node; set => node = value; }
@@ -109,7 +113,11 @@ namespace MaxFlowVisualization_Winforms
         /// </summary>
         /// <returns></returns>
         public int GetMaxFlow() {
-            // TODO: should only get called once the graph is a valid network and s and t are set
+            mainWindow.SetMessage("We start with the initial zero flow.");
+            Connection.ShowZeroFlow();
+            Task.Delay(waitBetweenEachConnection).Wait();
+
+
             try { return fordFulkerson(); } catch { return -1; } // if something goes wrong TODO: check which errors 
         }
 
@@ -133,16 +141,42 @@ namespace MaxFlowVisualization_Winforms
         /// <summary>
         /// Sets capacities (textbox values) to the actual flow until then.
         /// </summary>
-        private void setProperCapacityValues(int[,] rGraph) {
-            printGraph(Graph);
-            printGraph(rGraph);
+        private static void setProperCapacityValues(int[,] rGraph) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    Connection.ChangeCapacity(i, j, value: rGraph[i, j]);
-
-                    if (rGraph[i, j] > 0) // draw a connection in a new color
-                        Drawing.DrawLine(i, j, flowLine: true);
+                    Connection.ChangeShownCapacity(i, j, value: rGraph[i, j]);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Animates the augmenting path by going over the path connections with different colors
+        /// and also changing the shown residual capacities.
+        /// </summary>
+        public static void AnimatePath(int[] path, int[,] residualGraph) {
+            int previous = Node.S;
+            foreach (int node in path) {
+                // draw a flow line (for algorithm visualization):
+                if (previous == node)
+                    continue;
+
+                Drawing.DrawLine(previous, node, flowLine: true);
+                Connection.ChangeShownCapacity(previous, node, residualGraph[node, previous]);
+                Task.Delay(waitBetweenEachConnection).Wait(); // we wait for 1.5 seconds
+
+                previous = node; // so we proceed with the flow
+            }
+
+        }
+
+        public void RemoveAnimatedPath(int[] path) {
+            int previous = Node.S;
+            foreach (int node in path) {
+                if (previous == node)
+                    continue;
+
+                Drawing.DrawLine(previous, node, flowLine: false);
+                previous = node; // so we proceed with the flow
             }
         }
 
@@ -222,27 +256,41 @@ namespace MaxFlowVisualization_Winforms
                 // find the maximum flow through the path found.
                 int path_flow = int.MaxValue;
                 for (v = Node.T; v != Node.S; v = parent[v]) {
+                    // zacnemo z zadnjim, ga prekimo do začetnega (S) tako, da v prestavljamo v njegovega starša
+                    // u pa prav tako
                     u = parent[v];
                     path_flow = Math.Min(path_flow, residualGraph[u, v]);
                 }
 
                 // update residual capacities of the edges and
                 // reverse edges along the path
+
+                List<int> plus_path = new List<int>();
+
                 for (v = Node.T; v != Node.S; v = parent[v]) {
                     u = parent[v];
                     residualGraph[u, v] -= path_flow;
                     residualGraph[v, u] += path_flow;
 
-                    // draw a flow line (for algorithm visualization):
-                    //Drawing.DrawLine(u, v, flowLine: true);
+                    plus_path.Add(v);
                 }
 
                 // Add path flow to overall flow
                 max_flow += path_flow;
+
+                // animation:
+
+                plus_path.Reverse(); // they were in reversed order
+                // animate the current augmenting path:
+                AnimatePath(path: plus_path.ToArray(), residualGraph: residualGraph);
+                // wait a bit before deleting those connections (goint over with the previous color)
+                Task.Delay(waitBeetwenEachPath).Wait();
+                // remove the path:
+                RemoveAnimatedPath(path: plus_path.ToArray());
             }
 
             // Return the overall flow
-            setProperCapacityValues(residualGraph);
+            //setProperCapacityValues(residualGraph);
             return max_flow;
         }
     }
