@@ -32,6 +32,11 @@ namespace MaxFlowVisualization_Winforms
         private Node node;
         private Connection connection;
 
+        // Animation timing:
+        private static int animationStep;
+        private static int waitBetweenEachConnection = 1500;
+        private static int waitBeetwenEachPath = 1000;
+
         // Result label:
         private static Label ResultLabel;
 
@@ -69,10 +74,20 @@ namespace MaxFlowVisualization_Winforms
 
             // we want the number of algorithms steps required to get the maxflow in order to
             // show the progress of the animation on the progress bar correctly
-            Animation.Step = (int) (100 / getNumberOfAlgorithmSteps());
+            int numberOfSteps = getNumberOfAlgorithmSteps();
+            if (numberOfSteps == 0) {
+                mainWindow.SetMessage(MessageText.UnvalidGraph);
+                mainWindow.ShowButtonsDuringAnimation(true);
+                return;
+            }
+
+            // else solve the problem and animate the solution:
+
+            animationStep = (int) (100 / numberOfSteps);
 
             int result = GetMaxFlow();
-            mainWindow.Timer.Start();
+            // rezultat prikažimo še v stavku:
+            mainWindow.SetMessage(MessageText.algorithmExplanations[2] + result);
 
             // za vsak slučaj nastavimo progress bar na konec, ker bi lahko zaradi napak pri 
             // zaokroževanju del zmanjkal in bi kazalo, kot da še ni končano:
@@ -126,8 +141,9 @@ namespace MaxFlowVisualization_Winforms
         /// </summary>
         /// <returns></returns>
         public int GetMaxFlow() {
-            mainWindow.SetMessage("We start with the initial zero flow.");
+            mainWindow.SetMessage(MessageText.algorithmExplanations[0]); // razlaga algoritma
             Connection.ShowZeroFlow();
+            Task.Delay(waitBetweenEachConnection).Wait();
 
             try { return fordFulkerson(); } catch { return -1; } // if something goes wrong TODO: check which errors 
         }
@@ -150,22 +166,11 @@ namespace MaxFlowVisualization_Winforms
         }
 
         /// <summary>
-        /// Sets capacities (textbox values) to the actual flow until then.
-        /// </summary>
-        private static void setProperCapacityValues(int[,] rGraph) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    Connection.ChangeShownCapacity(i, j, value: rGraph[i, j]);
-                }
-            }
-        }
-
-        /*
-        /// <summary>
         /// Animates the augmenting path by going over the path connections with different colors
         /// and also changing the shown residual capacities.
         /// </summary>
         public void AnimatePath(int[] path, int[,] residualGraph) {
+
             int previous = Node.S;
 
             foreach (int node in path) {
@@ -185,7 +190,6 @@ namespace MaxFlowVisualization_Winforms
             }
 
         }
-        */
 
         public void RemoveAnimatedPath(int[] path) {
             int previous = Node.S;
@@ -201,7 +205,7 @@ namespace MaxFlowVisualization_Winforms
         public void CreateResultLabel() {
             // Create label:
             ResultLabel = new Label {
-                Size = new Size(40, 40),
+                Size = new Size(40, 80),
                 Location = Drawing.PointSum(Node.LabelT.Location, new Point(30, -8)),
                 ForeColor = Drawing.PenColor,
                 BackColor = Drawing.drArea.BackColor,
@@ -214,7 +218,7 @@ namespace MaxFlowVisualization_Winforms
         }
 
         private void removeResultNode() {
-            if (mainWindow.Controls.Contains(ResultLabel)) {
+            if (mainWindow.Controls.Contains(ResultLabel)) { 
                 mainWindow.Controls.Remove(ResultLabel); // removes the label from its control
                 ResultLabel.Dispose(); // let s go of the reference preventing memory release
             }
@@ -222,6 +226,9 @@ namespace MaxFlowVisualization_Winforms
 
         //                                       ALGORITM CODE:
 
+        /// <summary>
+        /// Checks if an augmenting path from s to t exists.
+        /// </summary>
         private bool isThereAPathFromSToT (int[,] residualGraph, int[] parent)
         {
             /* Returns true if there is a path from source 's' to sink 't' in residual graph. 
@@ -288,10 +295,6 @@ namespace MaxFlowVisualization_Winforms
 
             // Augment the flow while tere is path from source
             // to sink
-
-            List<int[]> paths = new List<int[]>();
-            List<int[,]> residualCapacities = new List<int[,]>();
-
             while (isThereAPathFromSToT(residualGraph, parent)) {
                 // Find minimum residual capacity of the edges
                 // along the path filled by BFS. Or we can say
@@ -324,16 +327,19 @@ namespace MaxFlowVisualization_Winforms
 
                 plus_path.Reverse(); // they were in reversed order
                 // animate the current augmenting path:
-                paths.Add(plus_path.ToArray());
-                residualCapacities.Add(residualGraph);
+                AnimatePath(path: plus_path.ToArray(), residualGraph: residualGraph);
+                // update current flow value:
+                ResultLabel.Text = (int.Parse(ResultLabel.Text) + path_flow).ToString();
 
+                // wait a bit before deleting those connections (goint over with the previous color)
+                Task.Delay(waitBeetwenEachPath).Wait();
+                mainWindow.SetMessage(MessageText.algorithmExplanations[1]); // razlaga algoritma
                 // remove the path:
                 RemoveAnimatedPath(path: plus_path.ToArray());
             }
 
-            
-            Animation.state = AnimationState.End; // algorithm has ended
-            return max_flow; // Return the overall flow
+            // Return the overall flow
+            return max_flow;
         }
 
 

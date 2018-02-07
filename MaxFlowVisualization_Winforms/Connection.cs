@@ -73,7 +73,7 @@ namespace MaxFlowVisualization_Winforms
                     MaxFlow.Graph[nodeA, nodeB] = capacity;
                 }
             } catch {
-                //mainWindow.SetMessage("Capacity should be numeric!");
+                mainWindow.SetMessage("Capacity should be numeric!");
             }
         }
 
@@ -97,7 +97,15 @@ namespace MaxFlowVisualization_Winforms
                         capacity: 0);
         }
 
+        /// <summary>
+        /// Adds a textbox with the given capacity value and stores it.
+        /// </summary>
         public void AddCapacity(Point startPoint, Point endPoint, int startNode, int endNode, int capacity) {
+            // če ga že imamo, nočemo dodati še enega:
+            if (capacityMatrix[startNode, endNode] != null)
+                return;
+
+            // sicer ga dodamo:
             int middleX = (startPoint.X + endPoint.X) / 2;
             int middleY = (startPoint.Y + endPoint.Y) / 2;
             Point location = Drawing.GetRelativeLocationCentered(Drawing.RelativeLocation(new Point(middleX, middleY)));

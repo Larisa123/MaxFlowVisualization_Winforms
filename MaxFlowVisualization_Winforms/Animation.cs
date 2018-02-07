@@ -20,8 +20,9 @@ namespace MaxFlowVisualization_Winforms
         public static int[] currentPath;
         public static int[,] currentResidualGraph;
 
-        public static int Step;
-        public static int WaitBetweenEachConnection = 1500;
+        public static int animationStep;
+        private static int waitBetweenEachConnection = 1500;
+        private static int waitBeetwenEachPath = 1000;
 
         public Animation(MainWindow mainWindow) {
             this.mainWindow = mainWindow;
@@ -32,43 +33,34 @@ namespace MaxFlowVisualization_Winforms
             
         }
 
-        public static void NewPath(int[] path, int[,] residualGraph) {
+        public static void NewPath(int[] path) {
             previousNode = Node.S;
             currentIndex = 0;
             currentPath = path;
-            currentResidualGraph = residualGraph;
-
-            state = AnimationState.AnimatingPath;
         }
 
         public void PerformStep() {
+            if (previousNode == currentNode)
+                return;
+
             if (currentIndex == currentPath.Length) {
                 state = AnimationState.InBetweenPaths; // this path has already ended
                 return;
             }
 
-            
-            if (state == AnimationState.InBetweenPaths) {
-                // then we just wait
-                state = AnimationState.AnimatingPath;
-                return;
-            }
 
-            currentNode = currentPath[currentIndex]; // prestavimo se na naslednje vozlišče:
-            currentIndex++;
-
-            if (previousNode == currentNode) { // ciklov ne rišemo, gremo na naslednjo vozlišče
-                PerformStep();
-                return;
-            }
+            currentNode = currentPath[currentIndex]; 
 
             Drawing.DrawLine(previousNode, currentNode, flowLine: true);
             Connection.ChangeShownCapacity(previousNode, currentNode, currentResidualGraph[currentNode, previousNode]);
 
             // show progress on the progress bar:
-            mainWindow.UpdateProgression(Step);
+            mainWindow.UpdateProgression(animationStep);
+
+            Task.Delay(waitBetweenEachConnection).Wait(); // we wait for 1.5 seconds
 
             previousNode = currentNode; // so we proceed with the flow
+            currentIndex++;
         }
 
     }

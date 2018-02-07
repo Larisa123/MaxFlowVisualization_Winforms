@@ -49,6 +49,9 @@ namespace MaxFlowVisualization_Winforms
             NumberOnScreen++;
         }
 
+        /// <summary>
+        /// Adds new label to the location of the last click (for nodes).
+        /// </summary>
         public void AddNewNodeLabel() {
             if (NumberOnScreen >= MaxNumber)
                 return;
@@ -57,6 +60,9 @@ namespace MaxFlowVisualization_Winforms
             AddNewNodeLabel(Drawing.GetRelativeLocationOfLastClick(), false);
         }
 
+        /// <summary>
+        /// Adds new label to the given location.
+        /// </summary>
         public void AddNewNodeLabel(Point location, bool fixedExample) {
 
             // Create label:
@@ -87,9 +93,12 @@ namespace MaxFlowVisualization_Winforms
         }
 
         public void SetInOutNodes() {
-            MessageBox.Show(MessageText.SetSAndT);
             MainWindow.AppState = AppState.SetS;
         }
+
+        /// <summary>
+        /// Sets S or T node and appropriately changes app s state.
+        /// </summary>
         public void SetNode(string node, Label label)  {
             Font bold = new Font(label.Font, FontStyle.Bold);
             label.Font = bold;

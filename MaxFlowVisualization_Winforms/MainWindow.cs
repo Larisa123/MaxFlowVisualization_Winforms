@@ -17,7 +17,6 @@ namespace MaxFlowVisualization_Winforms {
         private MaxFlow maxFlow; // Algorithm
 
         private Drawing drawing;
-        public Animation animation;
 
         // properties getters, setters:
         internal Drawing Drawing { get => drawing; set => drawing = value; }
@@ -43,11 +42,6 @@ namespace MaxFlowVisualization_Winforms {
             Drawing = new Drawing(mainWindow: this, drAreaComp: DrawingAreaComponent);
 
             Reset(); // sets initial values
-
-            animation = new Animation(mainWindow: this);
-
-            // timer (for animation):
-            Timer.Interval = Animation.WaitBetweenEachConnection;
         }
 
         public void Reset() {
@@ -106,13 +100,15 @@ namespace MaxFlowVisualization_Winforms {
             MaxFlow.Node.SetNode("t", Node.array[fixedNodeLocs.Length - 1]);
         }
 
-        private void updateMessage() { labelMainMessage.Text = message.getAppropriateMessage(AppState); }
+        private void updateMessage() { labelMainMessage.Text = message.GetAppropriateMessage(AppState); }
         public void SetMessage(string message) { labelMainMessage.Text = message; }
 
         /// <summary>
         /// Responds to button clicks etc. depending on the state the app is at.
         /// </summary>
         private void processUserInput() {
+            updateMessage();
+
             switch (AppState) {
                 case AppState.Initialized:
                     enableClearButton(false);
@@ -142,6 +138,7 @@ namespace MaxFlowVisualization_Winforms {
                 case AppState.EndDrawing:
                     maxFlow.Connection.DeactivateTextBoxes(); // so we cant change the capacities anymore
                     maxFlow.Node.SetInOutNodes();
+                    enableEndDrawingButton(false);
                     return;
                 case AppState.PreparedForSolving:
                     MaxFlow.ShouldAdd = ShouldAdd.Nothing;
@@ -170,11 +167,11 @@ namespace MaxFlowVisualization_Winforms {
             AnimationProgression.Value = 0;
             AnimationProgression.Visible = shouldShow;
             labelAnimation.Visible = shouldShow;
-
-            LabelAnimationSpeed.Visible = shouldShow;
-            ScrollBarAnimationSpeed.Visible = shouldShow;
         }
 
+        /// <summary>
+        /// Updates the value on progression bar.
+        /// </summary>
         public void UpdateProgression(float value) {
             AnimationProgression.Value += (int)value;
         }
@@ -219,34 +216,29 @@ namespace MaxFlowVisualization_Winforms {
 
         ///                                          USER INPUT:
 
-        private void buttonClicked() {
-            updateMessage();
-            processUserInput();
-        }
-
         private void buttonDraw_Click(object sender, EventArgs e){
             AppState = AppState.Draw;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonShowExample_Click(object sender, EventArgs e) {
             AppState = AppState.ShowExample;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonClearDrawingArea_Click(object sender, EventArgs e) {
             AppState = AppState.ClearDrawingArea;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonEndDrawing_Click(object sender, EventArgs e) {
             AppState = AppState.EndDrawing;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonSolve_Click(object sender, EventArgs e) {
             AppState = AppState.Solving;
-            buttonClicked();
+            processUserInput();
         }
 
         public void labelNode_MouseDown(object sender, MouseEventArgs e) {
@@ -278,6 +270,9 @@ namespace MaxFlowVisualization_Winforms {
         }
 
         public void capacity_TextChanged(object sender, EventArgs e) {
+            if (appState != AppState.Drawing)
+                return;
+
             TextBox textBox = (TextBox)sender;
             maxFlow.Connection.ChangeCapacity(textBox);
         }
@@ -286,12 +281,6 @@ namespace MaxFlowVisualization_Winforms {
             Drawing.PositionInArea = e.Location;
             MaxFlow.ShouldAdd = ShouldAdd.Node;
             processUserInput();
-        }
-
-        // Timer:
-
-        private void Timer_Tick(object sender, EventArgs e) {
-            animation.PerformStep();
         }
     }
 
