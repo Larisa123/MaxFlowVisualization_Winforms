@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Timers;
 
 namespace MaxFlowVisualization_Winforms {
     public partial class MainWindow : Form {
@@ -16,6 +17,7 @@ namespace MaxFlowVisualization_Winforms {
         private MaxFlow maxFlow; // Algorithm
 
         private Drawing drawing;
+        public Animation animation;
 
         // properties getters, setters:
         internal Drawing Drawing { get => drawing; set => drawing = value; }
@@ -41,6 +43,11 @@ namespace MaxFlowVisualization_Winforms {
             Drawing = new Drawing(mainWindow: this, drAreaComp: DrawingAreaComponent);
 
             Reset(); // sets initial values
+
+            animation = new Animation(mainWindow: this);
+
+            // timer (for animation):
+            Timer.Interval = Animation.WaitBetweenEachConnection;
         }
 
         public void Reset() {
@@ -113,11 +120,14 @@ namespace MaxFlowVisualization_Winforms {
                 case AppState.ShowExample:
                     Drawing.ClearDrawingArea();
                     showExample();
+                    showProgression(false);
                     enableSolveButton(true);
                     enableClearButton(true);
                     break;
                 case AppState.Draw:
+                    showProgression(false);
                     Drawing.ClearDrawingArea();
+                    enableClearButton(false);
                     enableSolveButton(false);
                     showEntryBox();
                     MaxFlow.ShouldAdd = ShouldAdd.Node;
@@ -137,10 +147,12 @@ namespace MaxFlowVisualization_Winforms {
                     MaxFlow.ShouldAdd = ShouldAdd.Nothing;
                     return;
                 case AppState.Solving:
+                    ShowButtonsDuringAnimation(false);
                     maxFlow.ComputeSolution();
                     enableSolveButton(false);
                     break;
                 case AppState.ClearDrawingArea:
+                    showProgression(false);
                     Drawing.ClearDrawingArea();
                     enableSolveButton(false);
                     enableClearButton(false);
@@ -149,6 +161,22 @@ namespace MaxFlowVisualization_Winforms {
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Shows progression bar, progression speed etc.
+        /// </summary>
+        private void showProgression(bool shouldShow) {
+            AnimationProgression.Value = 0;
+            AnimationProgression.Visible = shouldShow;
+            labelAnimation.Visible = shouldShow;
+
+            LabelAnimationSpeed.Visible = shouldShow;
+            ScrollBarAnimationSpeed.Visible = shouldShow;
+        }
+
+        public void UpdateProgression(float value) {
+            AnimationProgression.Value += (int)value;
         }
 
         ///                                          ENTRY FORM - asks the user for the number of nodes his network will have:
@@ -165,6 +193,19 @@ namespace MaxFlowVisualization_Winforms {
         private void entryFormEntryConfirmed(int entryValue) {
             maxFlow.InitializeGraph(entryValue);
             AppState = AppState.Drawing;
+        }
+
+        /// <summary>
+        /// Makes the animation buttons visible and all other buttons invisible when false is passed.
+        /// </summary>
+        public void ShowButtonsDuringAnimation(bool show) {
+            showProgression(!show);
+
+            buttonDraw.Visible = show;
+            buttonSolve.Visible = show;
+            buttonEndDrawing.Visible = show;
+            buttonClearDrawingArea.Visible = show;
+            buttonShowExample.Visible = show;
         }
 
         private void enableSolveButton(bool shouldEnable) { buttonSolve.Enabled = shouldEnable; }
@@ -247,6 +288,11 @@ namespace MaxFlowVisualization_Winforms {
             processUserInput();
         }
 
+        // Timer:
+
+        private void Timer_Tick(object sender, EventArgs e) {
+            animation.PerformStep();
+        }
     }
 
 

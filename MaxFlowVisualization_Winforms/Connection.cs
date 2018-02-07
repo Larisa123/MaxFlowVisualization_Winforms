@@ -73,7 +73,7 @@ namespace MaxFlowVisualization_Winforms
                     MaxFlow.Graph[nodeA, nodeB] = capacity;
                 }
             } catch {
-                mainWindow.SetMessage("Capacity should be numeric!");
+                //mainWindow.SetMessage("Capacity should be numeric!");
             }
         }
 

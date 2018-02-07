@@ -21,8 +21,8 @@ namespace MaxFlowVisualization_Winforms
         public static int S; // in node
         public static int T;// out node
 
-        private static Label labelS;
-        private static Label labelT;
+        public static Label LabelS;
+        public static Label LabelT;
 
         public Node(MainWindow mainWindow) {
             this.mainWindow = mainWindow;
@@ -106,14 +106,14 @@ namespace MaxFlowVisualization_Winforms
             if (node == "s") {
                 S = int.Parse(label.Tag.ToString());
                 signLabel.Location = Drawing.PointSum(label.Location, new Point(-Drawing.CircleRadius * 2, 0));
-                labelS = signLabel;
+                LabelS = signLabel;
 
                 MainWindow.AppState = AppState.SetT;
             }
             if (node == "t") {
                 T = int.Parse(label.Tag.ToString());
                 signLabel.Location = Drawing.PointSum(label.Location, new Point(Drawing.CircleRadius * 2, 0));
-                labelT = signLabel;
+                LabelT = signLabel;
 
                 MainWindow.AppState = AppState.PreparedForSolving;
             }
@@ -144,13 +144,13 @@ namespace MaxFlowVisualization_Winforms
         /// Removes in out nodes from the drawing area (S and T).
         /// </summary>
         private void removeInOutNodes() {
-            if (mainWindow.Controls.Contains(labelS)) {
-                mainWindow.Controls.Remove(labelS); // removes the label from its control
-                labelS.Dispose(); // lets go of the reference preventing memory release
+            if (mainWindow.Controls.Contains(LabelS)) {
+                mainWindow.Controls.Remove(LabelS); // removes the label from its control
+                LabelS.Dispose(); // lets go of the reference preventing memory release
             }
-            if (mainWindow.Controls.Contains(labelT)) {
-                mainWindow.Controls.Remove(labelT); // removes the label from its control
-                labelT.Dispose(); // lets go of the reference preventing memory release
+            if (mainWindow.Controls.Contains(LabelT)) {
+                mainWindow.Controls.Remove(LabelT); // removes the label from its control
+                LabelT.Dispose(); // lets go of the reference preventing memory release
             }
         }
     }

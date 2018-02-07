@@ -28,17 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.buttonDraw = new System.Windows.Forms.Button();
             this.buttonEndDrawing = new System.Windows.Forms.Button();
             this.buttonSolve = new System.Windows.Forms.Button();
             this.buttonShowExample = new System.Windows.Forms.Button();
             this.labelAnimation = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.AnimationProgression = new System.Windows.Forms.ProgressBar();
             this.labelTitle = new System.Windows.Forms.Label();
-            this.labelMainMessage = new System.Windows.Forms.Label();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.DrawingAreaComponent = new System.Windows.Forms.PictureBox();
             this.buttonClearDrawingArea = new System.Windows.Forms.Button();
+            this.LabelAnimationSpeed = new System.Windows.Forms.Label();
+            this.ScrollBarAnimationSpeed = new System.Windows.Forms.HScrollBar();
+            this.labelMainMessage = new System.Windows.Forms.Label();
+            this.DrawingAreaComponent = new System.Windows.Forms.PictureBox();
+            this.Timer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.DrawingAreaComponent)).BeginInit();
             this.SuspendLayout();
             // 
@@ -92,21 +95,20 @@
             // 
             this.labelAnimation.AutoSize = true;
             this.labelAnimation.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelAnimation.Location = new System.Drawing.Point(145, 454);
+            this.labelAnimation.Location = new System.Drawing.Point(141, 444);
             this.labelAnimation.Name = "labelAnimation";
-            this.labelAnimation.Size = new System.Drawing.Size(62, 18);
+            this.labelAnimation.Size = new System.Drawing.Size(65, 18);
             this.labelAnimation.TabIndex = 5;
-            this.labelAnimation.Text = "Animacija";
+            this.labelAnimation.Text = "Animacija:";
             this.labelAnimation.Visible = false;
             // 
-            // progressBar1
+            // AnimationProgression
             // 
-            this.progressBar1.Location = new System.Drawing.Point(212, 454);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(119, 18);
-            this.progressBar1.TabIndex = 6;
-            this.progressBar1.Value = 1;
-            this.progressBar1.Visible = false;
+            this.AnimationProgression.Location = new System.Drawing.Point(212, 444);
+            this.AnimationProgression.Name = "AnimationProgression";
+            this.AnimationProgression.Size = new System.Drawing.Size(119, 18);
+            this.AnimationProgression.TabIndex = 6;
+            this.AnimationProgression.Visible = false;
             // 
             // labelTitle
             // 
@@ -117,6 +119,42 @@
             this.labelTitle.Size = new System.Drawing.Size(365, 18);
             this.labelTitle.TabIndex = 7;
             this.labelTitle.Text = "Aplikacija reši problem maksimalnega pretoka za dano omrežje.";
+            // 
+            // buttonClearDrawingArea
+            // 
+            this.buttonClearDrawingArea.Enabled = false;
+            this.buttonClearDrawingArea.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonClearDrawingArea.Location = new System.Drawing.Point(212, 402);
+            this.buttonClearDrawingArea.Name = "buttonClearDrawingArea";
+            this.buttonClearDrawingArea.Size = new System.Drawing.Size(119, 28);
+            this.buttonClearDrawingArea.TabIndex = 10;
+            this.buttonClearDrawingArea.Text = "Pobriši";
+            this.buttonClearDrawingArea.UseVisualStyleBackColor = true;
+            this.buttonClearDrawingArea.Visible = false;
+            this.buttonClearDrawingArea.Click += new System.EventHandler(this.buttonClearDrawingArea_Click);
+            // 
+            // LabelAnimationSpeed
+            // 
+            this.LabelAnimationSpeed.AutoSize = true;
+            this.LabelAnimationSpeed.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.LabelAnimationSpeed.Location = new System.Drawing.Point(101, 408);
+            this.LabelAnimationSpeed.Name = "LabelAnimationSpeed";
+            this.LabelAnimationSpeed.Size = new System.Drawing.Size(105, 18);
+            this.LabelAnimationSpeed.TabIndex = 11;
+            this.LabelAnimationSpeed.Text = "Hitrost animacije:";
+            this.LabelAnimationSpeed.Visible = false;
+            // 
+            // ScrollBarAnimationSpeed
+            // 
+            this.ScrollBarAnimationSpeed.LargeChange = 100;
+            this.ScrollBarAnimationSpeed.Location = new System.Drawing.Point(212, 408);
+            this.ScrollBarAnimationSpeed.Maximum = 3000;
+            this.ScrollBarAnimationSpeed.Minimum = 300;
+            this.ScrollBarAnimationSpeed.Name = "ScrollBarAnimationSpeed";
+            this.ScrollBarAnimationSpeed.Size = new System.Drawing.Size(119, 18);
+            this.ScrollBarAnimationSpeed.TabIndex = 13;
+            this.ScrollBarAnimationSpeed.Value = 300;
+            this.ScrollBarAnimationSpeed.Visible = false;
             // 
             // labelMainMessage
             // 
@@ -138,18 +176,9 @@
             this.DrawingAreaComponent.TabStop = false;
             this.DrawingAreaComponent.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DrawingAreaComponent_MouseDown);
             // 
-            // buttonClearDrawingArea
+            // Timer
             // 
-            this.buttonClearDrawingArea.Enabled = false;
-            this.buttonClearDrawingArea.Font = new System.Drawing.Font("Source Sans Pro Light", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.buttonClearDrawingArea.Location = new System.Drawing.Point(212, 402);
-            this.buttonClearDrawingArea.Name = "buttonClearDrawingArea";
-            this.buttonClearDrawingArea.Size = new System.Drawing.Size(119, 28);
-            this.buttonClearDrawingArea.TabIndex = 10;
-            this.buttonClearDrawingArea.Text = "Pobriši";
-            this.buttonClearDrawingArea.UseVisualStyleBackColor = true;
-            this.buttonClearDrawingArea.Visible = false;
-            this.buttonClearDrawingArea.Click += new System.EventHandler(this.buttonClearDrawingArea_Click);
+            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // MainWindow
             // 
@@ -157,11 +186,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Menu;
             this.ClientSize = new System.Drawing.Size(537, 498);
+            this.Controls.Add(this.ScrollBarAnimationSpeed);
+            this.Controls.Add(this.LabelAnimationSpeed);
             this.Controls.Add(this.buttonClearDrawingArea);
             this.Controls.Add(this.DrawingAreaComponent);
             this.Controls.Add(this.labelMainMessage);
             this.Controls.Add(this.labelTitle);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.AnimationProgression);
             this.Controls.Add(this.labelAnimation);
             this.Controls.Add(this.buttonShowExample);
             this.Controls.Add(this.buttonSolve);
@@ -184,12 +215,14 @@
         private System.Windows.Forms.Button buttonSolve;
         private System.Windows.Forms.Button buttonShowExample;
         private System.Windows.Forms.Label labelAnimation;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label labelTitle;
         private System.Windows.Forms.Label labelMainMessage;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.PictureBox DrawingAreaComponent;
         private System.Windows.Forms.Button buttonClearDrawingArea;
+        public System.Windows.Forms.ProgressBar AnimationProgression;
+        private System.Windows.Forms.Label LabelAnimationSpeed;
+        private System.Windows.Forms.HScrollBar ScrollBarAnimationSpeed;
+        public System.Windows.Forms.Timer Timer;
     }
 }
 
