@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Timers;
 
 namespace MaxFlowVisualization_Winforms {
     public partial class MainWindow : Form {
@@ -99,13 +100,15 @@ namespace MaxFlowVisualization_Winforms {
             MaxFlow.Node.SetNode("t", Node.array[fixedNodeLocs.Length - 1]);
         }
 
-        private void updateMessage() { labelMainMessage.Text = message.getAppropriateMessage(AppState); }
+        private void updateMessage() { labelMainMessage.Text = message.GetAppropriateMessage(AppState); }
         public void SetMessage(string message) { labelMainMessage.Text = message; }
 
         /// <summary>
         /// Responds to button clicks etc. depending on the state the app is at.
         /// </summary>
         private void processUserInput() {
+            updateMessage();
+
             switch (AppState) {
                 case AppState.Initialized:
                     enableClearButton(false);
@@ -113,11 +116,14 @@ namespace MaxFlowVisualization_Winforms {
                 case AppState.ShowExample:
                     Drawing.ClearDrawingArea();
                     showExample();
+                    showProgression(false);
                     enableSolveButton(true);
                     enableClearButton(true);
                     break;
                 case AppState.Draw:
+                    showProgression(false);
                     Drawing.ClearDrawingArea();
+                    enableClearButton(false);
                     enableSolveButton(false);
                     showEntryBox();
                     MaxFlow.ShouldAdd = ShouldAdd.Node;
@@ -132,15 +138,18 @@ namespace MaxFlowVisualization_Winforms {
                 case AppState.EndDrawing:
                     maxFlow.Connection.DeactivateTextBoxes(); // so we cant change the capacities anymore
                     maxFlow.Node.SetInOutNodes();
+                    enableEndDrawingButton(false);
                     return;
                 case AppState.PreparedForSolving:
                     MaxFlow.ShouldAdd = ShouldAdd.Nothing;
                     return;
                 case AppState.Solving:
+                    ShowButtonsDuringAnimation(false);
                     maxFlow.ComputeSolution();
                     enableSolveButton(false);
                     break;
                 case AppState.ClearDrawingArea:
+                    showProgression(false);
                     Drawing.ClearDrawingArea();
                     enableSolveButton(false);
                     enableClearButton(false);
@@ -149,6 +158,22 @@ namespace MaxFlowVisualization_Winforms {
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Shows progression bar, progression speed etc.
+        /// </summary>
+        private void showProgression(bool shouldShow) {
+            AnimationProgression.Value = 0;
+            AnimationProgression.Visible = shouldShow;
+            labelAnimation.Visible = shouldShow;
+        }
+
+        /// <summary>
+        /// Updates the value on progression bar.
+        /// </summary>
+        public void UpdateProgression(float value) {
+            AnimationProgression.Value += (int)value;
         }
 
         ///                                          ENTRY FORM - asks the user for the number of nodes his network will have:
@@ -167,6 +192,19 @@ namespace MaxFlowVisualization_Winforms {
             AppState = AppState.Drawing;
         }
 
+        /// <summary>
+        /// Makes the animation buttons visible and all other buttons invisible when false is passed.
+        /// </summary>
+        public void ShowButtonsDuringAnimation(bool show) {
+            showProgression(!show);
+
+            buttonDraw.Visible = show;
+            buttonSolve.Visible = show;
+            buttonEndDrawing.Visible = show;
+            buttonClearDrawingArea.Visible = show;
+            buttonShowExample.Visible = show;
+        }
+
         private void enableSolveButton(bool shouldEnable) { buttonSolve.Enabled = shouldEnable; }
 
         private void enableEndDrawingButton(bool shouldEnable) { buttonEndDrawing.Enabled = shouldEnable; }
@@ -178,34 +216,29 @@ namespace MaxFlowVisualization_Winforms {
 
         ///                                          USER INPUT:
 
-        private void buttonClicked() {
-            updateMessage();
-            processUserInput();
-        }
-
         private void buttonDraw_Click(object sender, EventArgs e){
             AppState = AppState.Draw;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonShowExample_Click(object sender, EventArgs e) {
             AppState = AppState.ShowExample;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonClearDrawingArea_Click(object sender, EventArgs e) {
             AppState = AppState.ClearDrawingArea;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonEndDrawing_Click(object sender, EventArgs e) {
             AppState = AppState.EndDrawing;
-            buttonClicked();
+            processUserInput();
         }
 
         private void buttonSolve_Click(object sender, EventArgs e) {
             AppState = AppState.Solving;
-            buttonClicked();
+            processUserInput();
         }
 
         public void labelNode_MouseDown(object sender, MouseEventArgs e) {
@@ -237,6 +270,9 @@ namespace MaxFlowVisualization_Winforms {
         }
 
         public void capacity_TextChanged(object sender, EventArgs e) {
+            if (appState != AppState.Drawing)
+                return;
+
             TextBox textBox = (TextBox)sender;
             maxFlow.Connection.ChangeCapacity(textBox);
         }
@@ -246,7 +282,6 @@ namespace MaxFlowVisualization_Winforms {
             MaxFlow.ShouldAdd = ShouldAdd.Node;
             processUserInput();
         }
-
     }
 
 
