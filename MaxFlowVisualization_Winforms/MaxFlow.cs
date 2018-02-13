@@ -202,10 +202,19 @@ namespace MaxFlowVisualization_Winforms
             }
         }
 
+        /// <summary>
+        /// Creates a new label for showing the flow value if it doesn t already exist.
+        /// </summary>
         public void CreateResultLabel() {
+            if (mainWindow.Controls.Contains(ResultLabel)) {
+                ResultLabel.Text = "0";
+                return;
+            }
+
             // Create label:
-            ResultLabel = new Label {
-                Size = new Size(40, 80),
+            ResultLabel = new Label
+            {
+                Size = new Size(80, 40),
                 Location = Drawing.PointSum(Node.LabelT.Location, new Point(30, -8)),
                 ForeColor = Drawing.PenColor,
                 BackColor = Drawing.drArea.BackColor,
